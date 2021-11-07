@@ -3,6 +3,7 @@ add_library(esl INTERFACE)
 
 target_sources(esl
   PRIVATE
+    unique_handle.h
 
     $<$<BOOL:${WIN32}>:
     >
