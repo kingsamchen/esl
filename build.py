@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Please run the script at the root of source directory.
-# Run python(3) anvil.py --help for details.
+# Run python(3) build.py --help for details.
 # Set environment variable:
 #  - `GENERATOR` for specifying generator; unset means using default one.
 #  - `CPM_SOURCE_CACHE` for caching source of dependencies by CPM.cmake.
