@@ -5,6 +5,7 @@ add_executable(esl_test)
 target_sources(esl_test
   PRIVATE
     test_main.cpp
+    scope_guard_test.cpp
     unique_handle_test.cpp
 )
 
