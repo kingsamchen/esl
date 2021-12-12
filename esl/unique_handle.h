@@ -102,7 +102,7 @@ struct winfile_handle_traits {
 
 using winfile_handle_deleter = handle_ptr_deleter<winfile_handle_traits>;
 using unique_winfile_handle =
-    std::unique_ptr<winfile_handle_traits::handle_type, winfile_handle_deleter>;
+        std::unique_ptr<winfile_handle_traits::handle_type, winfile_handle_deleter>;
 
 inline unique_winfile_handle wrap_unique_winfile_handle(HANDLE raw_file_handle) {
     return unique_winfile_handle(raw_file_handle);

@@ -33,12 +33,12 @@ struct is_equality_comparable : std::false_type {};
 
 template<typename T>
 struct is_equality_comparable<
-    T,
-    std::void_t<
-        std::enable_if_t<
-            std::conjunction_v<
-                std::is_same<bool, decltype(T{} == T{})>,
-                std::is_same<bool, decltype(T{} != T{})>>>>> : std::true_type {};
+        T,
+        std::void_t<
+                std::enable_if_t<
+                        std::conjunction_v<
+                                std::is_same<bool, decltype(T{} == T{})>,
+                                std::is_same<bool, decltype(T{} != T{})>>>>> : std::true_type {};
 
 template<typename T>
 inline constexpr bool is_equality_comparable_v = is_equality_comparable<T>::value;

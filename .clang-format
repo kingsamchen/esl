@@ -28,7 +28,7 @@ BreakStringLiterals: true
 ColumnLimit: 0
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
+ContinuationIndentWidth: 8
 Cpp11BracedListStyle: true
 #EmptyLineAfterAccessModifier: Leave
 #EmptyLineBeforeAccessModifier: Leave
