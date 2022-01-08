@@ -5,6 +5,7 @@ target_sources(esl
   PRIVATE
     macros.h
     scope_guard.h
+    strings.h
     unique_handle.h
 
     $<$<BOOL:${WIN32}>:
