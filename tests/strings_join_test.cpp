@@ -4,9 +4,11 @@
 
 #include <deque>
 #include <forward_list>
+#include <iterator>
 #include <list>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <unordered_set>
 #include <vector>
 
@@ -45,6 +47,13 @@ inline constexpr bool is_sizable_str_multipass_range_v =
         strings::detail::is_sizable_str_multipass_range<Iterator>::value;
 
 struct foo {};
+
+template<typename T, typename = void>
+struct can_append : std::false_type {};
+
+template<typename T>
+struct can_append<T, std::void_t<decltype(to_append(T{}, std::declval<std::string&>()))>>
+    : std::true_type {};
 
 TEST_SUITE_BEGIN("strings/join");
 
@@ -106,9 +115,68 @@ TEST_CASE("is_sizable_str_multipass_range type traits") {
         CHECK_FALSE(is_sizable_str_multipass_range_v<vec_psz_t::const_iterator>);
         CHECK_FALSE(is_sizable_str_multipass_range_v<vec_psz_t::reverse_iterator>);
     }
+
+    SUBCASE("not hold for input iterator") {
+        using input_str_iter = std::istream_iterator<std::string>;
+        REQUIRE(std::is_same_v<input_str_iter::value_type, std::string>);
+        CHECK_FALSE(is_sizable_str_multipass_range_v<input_str_iter>);
+    }
+}
+
+TEST_CASE("to_append overloads") {
+    std::string out;
+
+    SUBCASE("append a sizable string") {
+        using namespace std::string_literals;
+        using namespace std::string_view_literals;
+
+        strings::detail::to_append("foo-"s, out);
+        CHECK_EQ("foo-", out);
+
+        strings::detail::to_append("bar-baz"sv, out);
+        CHECK_EQ("foo-bar-baz", out);
+    }
+
+    SUBCASE("append a raw c-style string") {
+        const char* pcsz = "foo-";
+        strings::detail::to_append(pcsz, out);
+        CHECK_EQ("foo-", out);
+
+        char sz[] = "bar-";
+        char* psz = sz;
+        strings::detail::to_append(psz, out);
+        CHECK_EQ("foo-bar-", out);
+
+        const char* const cpcsz = pcsz;
+        strings::detail::to_append(cpcsz, out);
+        CHECK_EQ("foo-bar-foo-", out);
+
+        CHECK_FALSE(can_append<int*>::value);
+        CHECK_FALSE(can_append<void*>::value);
+    }
+
+    SUBCASE("append a char") {
+        char c1 = 'X';
+        strings::detail::to_append(c1, out);
+        CHECK_EQ("X", out);
+
+        const char c2 = 'Y';
+        strings::detail::to_append(c2, out);
+        CHECK_EQ("XY", out);
+
+        CHECK_FALSE(can_append<int>::value);
+        CHECK_FALSE(can_append<double>::value);
+    }
 }
 
 TEST_CASE("trivial api examples") {
+    SUBCASE("most fundamental api") {
+        std::vector<std::string> strs{"foo", "bar", "baz"};
+        std::string out;
+        strings::join(strs.begin(), strs.end(), "-", out);
+        CHECK_EQ("foo-bar-baz", out);
+    }
+
     SUBCASE("sequence of std::string") {
         std::vector<std::string> strs{"foo", "bar", "baz"};
         CHECK_EQ("foo-bar-baz", strings::join(strs, "-"));
