@@ -7,6 +7,7 @@ target_sources(esl_test
     test_main.cpp
     scope_guard_test.cpp
     strings_join_test.cpp
+    strings_match_test.cpp
     unique_handle_test.cpp
 )
 
