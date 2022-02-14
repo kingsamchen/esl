@@ -11,9 +11,11 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
-namespace esl {
-namespace strings {
+#include "esl/detail/strings_split.h"
+
+namespace esl::strings {
 namespace detail {
 
 template<typename T>
@@ -233,7 +235,52 @@ constexpr bool ends_with_ignore_ascii_case(std::string_view str,
            equals_ignore_ascii_case(str.substr(str.size() - suffix.size()), suffix);
 }
 
-} // namespace strings
-} // namespace esl
+class by_string {
+public:
+    explicit by_string(std::string delim)
+        : delimiter_(std::move(delim)) {}
+
+    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+        return text.find(delimiter_, pos);
+    }
+
+    std::size_t size() const noexcept {
+        return delimiter_.size();
+    }
+
+private:
+    std::string delimiter_;
+};
+
+class by_any_char {
+public:
+    explicit by_any_char(std::string delims)
+        : delimiters_(std::move(delims)) {}
+
+    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+        return text.find_first_of(delimiters_, pos);
+    }
+
+    std::size_t size() const noexcept { // NOLINT(readability-convert-member-functions-to-static)
+        return 1;
+    }
+
+private:
+    std::string delimiters_;
+};
+
+struct allow_any {
+    bool operator()(std::string_view) const noexcept {
+        return true;
+    }
+};
+
+struct skip_empty {
+    bool operator()(std::string_view str) const noexcept {
+        return !str.empty();
+    }
+};
+
+} // namespace esl::strings
 
 #endif // ESL_STRINGS_H_

@@ -8,6 +8,8 @@ target_sources(esl
     strings.h
     unique_handle.h
 
+    detail/strings_split.h
+
     $<$<BOOL:${WIN32}>:
     >
 
