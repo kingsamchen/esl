@@ -9,6 +9,7 @@
 #include <ostream>
 #include <queue>
 #include <set>
+#include <sstream>
 #include <stack>
 #include <string>
 #include <string_view>
@@ -237,6 +238,94 @@ TEST_CASE_TEMPLATE("split view with StringTypes", StringType, std::string_view, 
 
         auto hashset = splitter.template to<std::unordered_set<std::string>>();
         CHECK_EQ(hashset, std::unordered_set<std::string>{"foo", "bar", "baz", "hello", "world"});
+    }
+}
+
+TEST_CASE("Delimiter selector") {
+    SUBCASE("a delimiter itself will be selected") {
+        static_assert(std::is_same_v<detail::select_delimiter<strings::by_string>::type,
+                                     strings::by_string>);
+        static_assert(std::is_same_v<detail::select_delimiter<strings::by_char>::type,
+                                     strings::by_char>);
+        static_assert(std::is_same_v<detail::select_delimiter<strings::by_any_char>::type,
+                                     strings::by_any_char>);
+    }
+
+    // Since a `Delimiter` is always passed by value, deduced type will not be qualified
+    // by cv or/and ref.
+    SUBCASE("deduce a delimiter from given value") {
+        static_assert(std::is_same_v<detail::select_delimiter<char>::type,
+                                     strings::by_char>);
+        static_assert(std::is_same_v<detail::select_delimiter<char*>::type,
+                                     strings::by_string>);
+        static_assert(std::is_same_v<detail::select_delimiter<const char*>::type,
+                                     strings::by_string>);
+        static_assert(std::is_same_v<detail::select_delimiter<std::string_view>::type,
+                                     strings::by_string>);
+        static_assert(std::is_same_v<detail::select_delimiter<std::string>::type,
+                                     strings::by_string>);
+    }
+}
+
+TEST_CASE("split functions") {
+    SUBCASE("normal usages") {
+        SUBCASE("auto deduce as by_char delimiter") {
+            auto vec = strings::split("foo-bar-baz-", '-').to<std::vector<std::string_view>>();
+            CHECK_EQ(vec, std::vector<std::string_view>{"foo", "bar", "baz", ""});
+        }
+
+        SUBCASE("auto deduce as by_string delimiter") {
+            auto vec = strings::split("foo:=bar:=baz:===", ":=")
+                               .to<std::vector<std::string_view>>();
+            CHECK_EQ(vec, std::vector<std::string_view>{"foo", "bar", "baz", "=="});
+        }
+
+        SUBCASE("explicitly specify delimiter") {
+            auto vec = strings::split("foo:=bar:=baz:===", strings::by_any_char(":="))
+                               .to<std::vector<std::string_view>>();
+            CHECK_EQ(vec, std::vector<std::string_view>{"foo", "", "bar", "", "baz", "", "", "", ""});
+        }
+    }
+
+    SUBCASE("source text is a rvalue of std::string") {
+        // Lifetime of the input text ends as the lifetime of split_view ends,
+        // which happens when function to<>() returns.
+        // Thus we must use std::string for each token part.
+
+        SUBCASE("a prvalue case") {
+            auto vec = strings::split(std::string("foo-bar-baz-"), '-')
+                               .to<std::vector<std::string>>();
+            CHECK_EQ(vec, std::vector<std::string>{"foo", "bar", "baz", ""});
+        }
+
+        SUBCASE("an xvalue case") {
+            auto str = std::string("foo-bar-baz-");
+            auto vec = strings::split(std::move(str), '-')
+                               .to<std::vector<std::string>>();
+            CHECK_EQ(vec, std::vector<std::string>{"foo", "bar", "baz", ""});
+        }
+    }
+
+    SUBCASE("specify another predicate") {
+        SUBCASE("normal case") {
+            auto vec = strings::split("foo:=bar:=baz:===", strings::by_any_char(":="), strings::skip_empty{})
+                               .to<std::vector<std::string_view>>();
+            CHECK_EQ(vec, std::vector<std::string_view>{"foo", "bar", "baz"});
+        }
+
+        SUBCASE("source is a prvalue") {
+            auto vec = strings::split(std::string("foo:=bar:=baz:==="),
+                                      strings::by_any_char(":="),
+                                      strings::skip_empty{})
+                               .to<std::vector<std::string>>();
+            CHECK_EQ(vec, std::vector<std::string>{"foo", "bar", "baz"});
+        }
+
+        SUBCASE("predicate allow function itself") {
+            auto vec = strings::split("foo:=bar:=baz:===", strings::by_any_char(":="), not_empty)
+                               .to<std::vector<std::string_view>>();
+            CHECK_EQ(vec, std::vector<std::string_view>{"foo", "bar", "baz"});
+        }
     }
 }
 

@@ -255,7 +255,7 @@ private:
 class by_char {
 public:
     explicit by_char(char ch) noexcept
-            : ch_(ch) {}
+        : ch_(ch) {}
 
     std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         return text.find(ch_, pos);
@@ -297,6 +297,77 @@ struct skip_empty {
         return !str.empty();
     }
 };
+
+namespace detail {
+
+template<typename Delimiter>
+struct select_delimiter {
+    using type = Delimiter;
+};
+
+template<>
+struct select_delimiter<char> {
+    using type = by_char;
+};
+
+template<>
+struct select_delimiter<char*> {
+    using type = by_string;
+};
+
+template<>
+struct select_delimiter<const char*> {
+    using type = by_string;
+};
+
+template<>
+struct select_delimiter<std::string_view> {
+    using type = by_string;
+};
+
+template<>
+struct select_delimiter<std::string> {
+    using type = by_string;
+};
+
+} // namespace detail
+
+template<typename Delimiter>
+auto split(std::string_view text, Delimiter delim) {
+    using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
+    return detail::split_view<std::string_view, delimiter_t, allow_any>(
+            text, delimiter_t(delim), allow_any{});
+}
+
+template<typename Delimiter, typename Predicate>
+auto split(std::string_view text, Delimiter delim, Predicate predicate) {
+    using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
+    return detail::split_view<std::string_view, delimiter_t, Predicate>(
+            text, delimiter_t(delim), predicate);
+}
+
+// Following two functions will be selected if and only if the `text` is a rvalue
+// `std::string`; using a direct cast instead of a `std::move()` or `std::forward()`
+// call to imply this semantic behavior while avoiding potential lint issues.
+
+template<typename Delimiter,
+         typename StringType,
+         std::enable_if_t<std::is_same_v<std::remove_cv_t<StringType>, std::string>, int> = 0>
+auto split(StringType&& text, Delimiter delim) {
+    using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
+    return detail::split_view<std::string, delimiter_t, allow_any>(
+            static_cast<std::string&&>(text), delimiter_t(delim), allow_any{});
+}
+
+template<typename Delimiter,
+         typename StringType,
+         typename Predicate,
+         std::enable_if_t<std::is_same_v<std::remove_cv_t<StringType>, std::string>, int> = 0>
+auto split(StringType&& text, Delimiter delim, Predicate predicate) {
+    using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
+    return detail::split_view<std::string, delimiter_t, Predicate>(
+            static_cast<std::string&&>(text), delimiter_t(delim), predicate);
+}
 
 } // namespace esl::strings
 
