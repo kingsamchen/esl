@@ -252,6 +252,23 @@ private:
     std::string delimiter_;
 };
 
+class by_char {
+public:
+    explicit by_char(char ch) noexcept
+            : ch_(ch) {}
+
+    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+        return text.find(ch_, pos);
+    }
+
+    std::size_t size() const noexcept { // NOLINT(readability-convert-member-functions-to-static)
+        return 1;
+    }
+
+private:
+    char ch_;
+};
+
 class by_any_char {
 public:
     explicit by_any_char(std::string delims)
