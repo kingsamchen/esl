@@ -235,13 +235,17 @@ constexpr bool ends_with_ignore_ascii_case(std::string_view str,
            equals_ignore_ascii_case(str.substr(str.size() - suffix.size()), suffix);
 }
 
+// The behavior is undefined if given `delim` is empty.
 class by_string {
 public:
     explicit by_string(std::string delim)
-        : delimiter_(std::move(delim)) {}
+        : delimiter_(std::move(delim)) {
+        assert(!delimiter_.empty());
+    }
 
     std::size_t find(std::string_view text, std::size_t pos) const noexcept {
-        return text.find(delimiter_, pos);
+        return delimiter_.size() == 1 ? text.find(delimiter_[0], pos)
+                                      : text.find(delimiter_, pos);
     }
 
     std::size_t size() const noexcept {
@@ -269,13 +273,17 @@ private:
     char ch_;
 };
 
+// The behavior is undefined if given `delim` is empty.
 class by_any_char {
 public:
     explicit by_any_char(std::string delims)
-        : delimiters_(std::move(delims)) {}
+        : delimiters_(std::move(delims)) {
+        assert(!delimiters_.empty());
+    }
 
     std::size_t find(std::string_view text, std::size_t pos) const noexcept {
-        return text.find_first_of(delimiters_, pos);
+        return delimiters_.size() == 1 ? text.find_first_of(delimiters_[0], pos)
+                                       : text.find_first_of(delimiters_, pos);
     }
 
     std::size_t size() const noexcept { // NOLINT(readability-convert-member-functions-to-static)
