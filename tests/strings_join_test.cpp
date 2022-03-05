@@ -160,7 +160,7 @@ TEST_CASE("to_append overloads") {
         strings::detail::to_append(c1, out);
         CHECK_EQ("X", out);
 
-        const char c2 = 'Y';
+        constexpr const char c2 = 'Y';
         strings::detail::to_append(c2, out);
         CHECK_EQ("XY", out);
 
@@ -253,6 +253,7 @@ TEST_CASE("trivial api edge cases") {
 
 TEST_CASE("appender api examples") {
     SUBCASE("a sequence of pair") {
+        // NOLINTNEXTLINE(readability-magic-numbers)
         std::vector<std::pair<char, int>> seq{{'A', 65}, {'B', 66}, {'C', 67}};
         auto str = strings::join(seq, " ", [](const auto& e, std::string& out) {
             out.append(1, e.first).append("->").append(std::to_string(e.second));

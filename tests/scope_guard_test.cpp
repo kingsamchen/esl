@@ -61,6 +61,7 @@ TEST_CASE("support different types of guard function") {
         SUBCASE("pass instance by reference") {
             REQUIRE(v.empty());
             {
+                // NOLINTNEXTLINE(modernize-avoid-bind)
                 [[maybe_unused]] auto guard = make_scope_guard(std::bind(pmfn, std::ref(v), 42));
             }
             CHECK_EQ(v.size(), 1);
@@ -69,6 +70,7 @@ TEST_CASE("support different types of guard function") {
         SUBCASE("pass instance by value") {
             REQUIRE(v.empty());
             {
+                // NOLINTNEXTLINE(modernize-avoid-bind)
                 [[maybe_unused]] auto guard = make_scope_guard(std::bind(pmfn, v, 42));
             }
             CHECK_EQ(v.size(), 0);
@@ -117,7 +119,7 @@ TEST_CASE("support different types of guard function") {
     }
 
     SUBCASE("function object") {
-        int n = 41;
+        int n = 41; // NOLINT(readability-magic-numbers)
 
         SUBCASE("function object") {
             {

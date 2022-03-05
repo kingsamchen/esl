@@ -24,21 +24,16 @@ public:
 
     handle_ptr() noexcept = default;
 
-    // implicit
-    handle_ptr(std::nullptr_t) noexcept {}
+    handle_ptr(std::nullptr_t) noexcept {} // NOLINT(google-explicit-constructor)
 
-    // implicit
-    handle_ptr(handle_type handle) noexcept
+    handle_ptr(handle_type handle) noexcept // NOLINT(google-explicit-constructor)
         : handle_(handle) {}
-
-    ~handle_ptr() = default;
 
     explicit operator bool() const noexcept {
         return Traits::is_valid(handle_);
     }
 
-    // implicit
-    operator handle_type() const noexcept {
+    operator handle_type() const noexcept { // NOLINT(google-explicit-constructor)
         return handle_;
     }
 

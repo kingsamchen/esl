@@ -54,7 +54,7 @@ TEST_SUITE_BEGIN("strings/split");
 TEST_CASE("split iterator") {
     SUBCASE("type traits") {
         using iter_t = detail::split_iterator<dummy_delimiter, allow_any_t>;
-        static_assert(std::is_same_v<typename std::iterator_traits<iter_t>::iterator_category,
+        static_assert(std::is_same_v<std::iterator_traits<iter_t>::iterator_category,
                                      std::forward_iterator_tag>);
     }
 
@@ -282,7 +282,8 @@ TEST_CASE("split functions") {
         SUBCASE("explicitly specify delimiter") {
             auto vec = strings::split("foo:=bar:=baz:===", strings::by_any_char(":="))
                                .to<std::vector<std::string_view>>();
-            CHECK_EQ(vec, std::vector<std::string_view>{"foo", "", "bar", "", "baz", "", "", "", ""});
+            CHECK_EQ(vec,
+                     std::vector<std::string_view>{"foo", "", "bar", "", "baz", "", "", "", ""});
         }
     }
 
@@ -307,8 +308,9 @@ TEST_CASE("split functions") {
 
     SUBCASE("specify another predicate") {
         SUBCASE("normal case") {
-            auto vec = strings::split("foo:=bar:=baz:===", strings::by_any_char(":="), strings::skip_empty{})
-                               .to<std::vector<std::string_view>>();
+            auto vec = strings::split("foo:=bar:=baz:===",
+                                      strings::by_any_char(":="),
+                                      strings::skip_empty{}).to<std::vector<std::string_view>>();
             CHECK_EQ(vec, std::vector<std::string_view>{"foo", "bar", "baz"});
         }
 

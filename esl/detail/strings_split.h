@@ -7,6 +7,7 @@
 #ifndef ESL_DETAIL_STRINGS_SPLIT_H_
 #define ESL_DETAIL_STRINGS_SPLIT_H_
 
+#include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <optional>
@@ -47,8 +48,8 @@ public:
         : pos_(pos),
           state_(scan_state::scanning),
           text_(text),
-          delimiter_(delim),
-          predicate_(pred) {
+          delimiter_(std::move(delim)),
+          predicate_(std::move(pred)) {
         assert(pos_ != std::string_view::npos);
         advance();
     }
@@ -209,8 +210,8 @@ public:
 
     split_view(StringType text, Delimiter delim, Predicate pred)
         : text_(std::move(text)),
-          delimiter_(delim),
-          predicate_(pred) {}
+          delimiter_(std::move(delim)),
+          predicate_(std::move(pred)) {}
 
     ~split_view() = default;
 

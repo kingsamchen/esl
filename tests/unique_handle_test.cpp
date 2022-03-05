@@ -166,14 +166,15 @@ TEST_CASE("unique_winfile_handle should satisfy") {
             CHECK(handle == nullptr);
         }
 
-        SUBCASE("handle value is equal to INVALID_HANDLE_VALUE") {
+        SUBCASE("handle value is equal to INVALID_HANDLE_VALUE but not NULL") {
+            // Please differentiate NULL value from nullptr.
             CHECK(handle.get() == INVALID_HANDLE_VALUE);
-            CHECK(handle.get() != static_cast<HANDLE>(0)); // NOLINT
+            CHECK(static_cast<HANDLE>(handle.get()) != NULL);
         }
     }
 
     SUBCASE("0 handle value is a valid value for unique_winfile_handle") {
-        auto handle = wrap_unique_winfile_handle(static_cast<HANDLE>(0));
+        auto handle = wrap_unique_winfile_handle(static_cast<HANDLE>(NULL));
         CHECK(handle != nullptr);
     }
 }
