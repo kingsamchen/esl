@@ -49,6 +49,8 @@ else()
   include(${ESL_CMAKE_DIR}/compiler_posix.cmake)
 endif()
 
+include(${ESL_CMAKE_DIR}/clang_tidy.cmake)
+
 add_subdirectory(esl)
 
 if(ESL_NOT_SUBPROJECT AND BUILD_TESTING)
