@@ -19,6 +19,7 @@
 #include "doctest/doctest.h"
 
 #include "esl/strings.h"
+#include "tests/stringification.h"
 
 namespace detail = esl::strings::detail;
 namespace strings = esl::strings;

@@ -1,4 +1,4 @@
-CPMAddPackage("gh:onqtam/doctest#2.4.6")
+CPMAddPackage("gh:onqtam/doctest#v2.4.8")
 
 add_executable(esl_test)
 
@@ -10,6 +10,8 @@ target_sources(esl_test
     strings_match_test.cpp
     strings_split_test.cpp
     unique_handle_test.cpp
+
+    stringification.h
 )
 
 target_link_libraries(esl_test
