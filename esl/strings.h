@@ -14,36 +14,35 @@
 #include <utility>
 
 #include "esl/detail/strings_join.h"
+#include "esl/detail/strings_match.h"
 #include "esl/detail/strings_split.h"
 
 namespace esl::strings {
-namespace detail {
 
-constexpr char ascii_to_lower(char ch) noexcept {
-    return 'A' <= ch && ch <= 'Z' ? static_cast<char>('a' + ch - 'A') : ch;
+constexpr bool equals_ignore_ascii_case(std::string_view s1, std::string_view s2) noexcept {
+    return s1.size() == s2.size() && detail::compare_n_ignore_ascii_case(s1, s2, s1.size()) == 0;
 }
 
-constexpr char ascii_to_upper(char ch) noexcept {
-    return 'a' <= ch && ch <= 'z' ? static_cast<char>('A' + ch - 'a') : ch;
+constexpr bool starts_with(std::string_view str, std::string_view prefix) noexcept {
+    return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
 }
 
-constexpr int compare_n_ignore_ascii_case(std::string_view s1,
-                                          std::string_view s2,
-                                          std::size_t len) noexcept {
-    assert(len <= std::min(s1.size(), s2.size()));
-
-    for (std::size_t i = 0; i < len; ++i) {
-        auto delta = static_cast<int>(static_cast<unsigned char>(ascii_to_lower(s1[i]))) -
-                     static_cast<int>(static_cast<unsigned char>(ascii_to_lower(s2[i])));
-        if (delta != 0) {
-            return delta;
-        }
-    }
-
-    return 0;
+constexpr bool ends_with(std::string_view str, std::string_view suffix) noexcept {
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-} // namespace detail
+constexpr bool starts_with_ignore_ascii_case(std::string_view str,
+                                             std::string_view prefix) noexcept {
+    return str.size() >= prefix.size() &&
+           equals_ignore_ascii_case(str.substr(0, prefix.size()), prefix);
+}
+
+constexpr bool ends_with_ignore_ascii_case(std::string_view str,
+                                           std::string_view suffix) noexcept {
+    return str.size() >= suffix.size() &&
+           equals_ignore_ascii_case(str.substr(str.size() - suffix.size()), suffix);
+}
 
 template<typename Iterator>
 void join(Iterator first, Iterator last, std::string_view sep, std::string& out) {
@@ -128,31 +127,6 @@ std::string join(std::initializer_list<T> il, std::string_view sep, Appender&& a
     std::string out;
     join(il, sep, out, std::forward<Appender>(ap));
     return out;
-}
-
-constexpr bool equals_ignore_ascii_case(std::string_view s1, std::string_view s2) noexcept {
-    return s1.size() == s2.size() && detail::compare_n_ignore_ascii_case(s1, s2, s1.size()) == 0;
-}
-
-constexpr bool starts_with(std::string_view str, std::string_view prefix) noexcept {
-    return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
-}
-
-constexpr bool ends_with(std::string_view str, std::string_view suffix) noexcept {
-    return str.size() >= suffix.size() &&
-           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-}
-
-constexpr bool starts_with_ignore_ascii_case(std::string_view str,
-                                             std::string_view prefix) noexcept {
-    return str.size() >= prefix.size() &&
-           equals_ignore_ascii_case(str.substr(0, prefix.size()), prefix);
-}
-
-constexpr bool ends_with_ignore_ascii_case(std::string_view str,
-                                           std::string_view suffix) noexcept {
-    return str.size() >= suffix.size() &&
-           equals_ignore_ascii_case(str.substr(str.size() - suffix.size()), suffix);
 }
 
 // The behavior is undefined if given `delim` is empty.

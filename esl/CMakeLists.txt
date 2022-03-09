@@ -9,6 +9,7 @@ target_sources(esl
     unique_handle.h
 
     detail/strings_join.h
+    detail/strings_match.h
     detail/strings_split.h
 
     $<$<BOOL:${WIN32}>:
