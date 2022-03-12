@@ -6,7 +6,6 @@
 #include <forward_list>
 #include <list>
 #include <map>
-#include <ostream>
 #include <queue>
 #include <set>
 #include <stack>
@@ -311,7 +310,8 @@ TEST_CASE("split functions") {
         SUBCASE("normal case") {
             auto vec = strings::split("foo:=bar:=baz:===",
                                       strings::by_any_char(":="),
-                                      strings::skip_empty{}).to<std::vector<std::string_view>>();
+                                      strings::skip_empty{})
+                               .to<std::vector<std::string_view>>();
             CHECK_EQ(vec, std::vector<std::string_view>{"foo", "bar", "baz"});
         }
 
