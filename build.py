@@ -58,6 +58,7 @@ class uniconf_subsystem():
 
         self._cpm_cache = params['cpm_cache_dir']
         self._clang_tidy = params['clang_tidy']
+        self._sanitizer = params['sanitizer']
 
     def generate(self):
         cmd = ['cmake']
@@ -69,8 +70,11 @@ class uniconf_subsystem():
         if self._gen:
             cmd.append(f'-G "{self._gen}"')
 
-        if self._clang_tidy:
-            cmd.append(f'-DESL_ENABLE_CLANG_TIDY=ON')
+        clang_tidy = 'ON' if self._clang_tidy else 'OFF'
+        cmd.append(f'-DESL_ENABLE_CLANG_TIDY={clang_tidy}')
+
+        sanitizer = 'ON' if self._sanitizer else 'OFF'
+        cmd.append(f'-DESL_USE_SANITIZER={sanitizer}')
 
         cmd.append(f'-DCMAKE_BUILD_TYPE={self._build_type}')
         cmd.append(f'-B "{self._out}"')
@@ -120,8 +124,8 @@ class multiconf_subsystem():
         if self._gen:
             cmd.append(f'-G "{self._gen}"')
 
-        if self._clang_tidy:
-            cmd.append(f'-DESL_ENABLE_CLANG_TIDY=ON')
+        clang_tidy = 'ON' if self._clang_tidy else 'OFF'
+        cmd.append(f'-DESL_ENABLE_CLANG_TIDY={clang_tidy}')
 
         cmd.append(f'-B "{self._out}"')
         cmd.append(f'-S "{self._src}"')
@@ -171,6 +175,9 @@ def main():
     parser.add_argument('--clang-tidy', dest='clang_tidy',
                         type=lambda opt: bool(strtobool(opt)), default=True,
                         help='enable clang-tidy on build')
+    parser.add_argument('--sanitizer', dest='sanitizer',
+                        type=lambda opt: bool(strtobool(opt)), default=True,
+                        help='enable asan & ubsan')
     args = parser.parse_args()
 
     # Setup params
@@ -179,7 +186,8 @@ def main():
               'cpm_cache_dir': os.getenv('CPM_SOURCE_CACHE'),
               'skip_build': args.skip_build,
               'clean_mode': args.clean_mode,
-              'clang_tidy': args.clang_tidy}
+              'clang_tidy': args.clang_tidy,
+              'sanitizer': args.sanitizer,}
 
     subsys = create_build_subsystem(params)
 

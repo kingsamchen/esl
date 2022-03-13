@@ -11,6 +11,10 @@ if(ESL_NOT_SUBPROJECT)
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 endif()
 
+message(STATUS "ESL_USE_MSVC_PARALLEL_BUILD = ${ESL_USE_MSVC_PARALLEL_BUILD}")
+message(STATUS "ESL_USE_MSVC_STATIC_ANALYSIS = ${ESL_USE_MSVC_STATIC_ANALYSIS}")
+message(STATUS "ESL_USE_WIN32_LEAN_AND_MEAN = ${ESL_USE_WIN32_LEAN_AND_MEAN}")
+
 function(esl_apply_common_compile_options TARGET)
   target_compile_definitions(${TARGET}
     PUBLIC
@@ -43,6 +47,8 @@ function(esl_apply_common_compile_options TARGET)
 endfunction()
 
 function(esl_apply_msvc_parallel_build TARGET)
+  message(STATUS "Apply esl msvc parallel build for ${TARGET}")
+
   target_compile_options(${TARGET}
     PRIVATE
       /MP
@@ -55,6 +61,8 @@ endfunction()
 #     /wd6011
 # )
 function(esl_apply_msvc_static_analysis TARGET)
+  message(STATUS "Apply esl msvc static analysis for ${TARGET}")
+
   set(multiValueArgs WDL)
   cmake_parse_arguments(ARG "" "" "${multiValueArgs}" ${ARGN})
 
