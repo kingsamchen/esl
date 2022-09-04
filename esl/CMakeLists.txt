@@ -3,6 +3,7 @@ add_library(esl INTERFACE)
 
 target_sources(esl
   PRIVATE
+    byteswap.h
     macros.h
     scope_guard.h
     strings.h

@@ -5,13 +5,14 @@ add_executable(esl_test)
 target_sources(esl_test
   PRIVATE
     test_main.cpp
+    stringification.h
+
+    byteswap_test.cpp
     scope_guard_test.cpp
     strings_join_test.cpp
     strings_match_test.cpp
     strings_split_test.cpp
     unique_handle_test.cpp
-
-    stringification.h
 )
 
 target_link_libraries(esl_test
