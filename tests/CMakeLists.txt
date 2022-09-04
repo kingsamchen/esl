@@ -1,4 +1,4 @@
-CPMAddPackage("gh:onqtam/doctest#v2.4.8")
+CPMAddPackage("gh:onqtam/doctest#v2.4.9")
 
 add_executable(esl_test)
 
