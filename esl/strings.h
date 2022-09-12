@@ -271,6 +271,71 @@ auto split(StringType&& text, Delimiter delim, Predicate predicate) {
             static_cast<std::string&&>(text), delimiter_t(delim), predicate);
 }
 
+[[nodiscard]] constexpr std::string_view trim_prefix(std::string_view str,
+                                                     std::string_view prefix) noexcept {
+    if (starts_with(str, prefix)) {
+        str.remove_prefix(prefix.size());
+    }
+
+    return str;
+}
+
+inline void trim_prefix_inplace(std::string& str, std::string_view prefix) {
+    if (starts_with(str, prefix)) {
+        str.erase(0, prefix.size());
+    }
+}
+
+[[nodiscard]] constexpr std::string_view trim_suffix(std::string_view str,
+                                                     std::string_view suffix) noexcept {
+    if (ends_with(str, suffix)) {
+        str.remove_suffix(suffix.size());
+    }
+
+    return str;
+}
+
+inline void trim_suffix_inplace(std::string& str, std::string_view suffix) {
+    if (ends_with(str, suffix)) {
+        str.erase(str.size() - suffix.size());
+    }
+}
+
+[[nodiscard]] constexpr std::string_view trim_left(std::string_view str,
+                                                   std::string_view chars) noexcept {
+    auto pos = str.find_first_not_of(chars);
+    return pos == std::string_view::npos ? std::string_view{} : str.substr(pos);
+}
+
+inline void trim_left_inplace(std::string& str, std::string_view chars) {
+    auto pos = str.find_first_not_of(chars);
+    str.erase(0, pos);
+}
+
+[[nodiscard]] constexpr std::string_view trim_right(std::string_view str,
+                                                    std::string_view chars) noexcept {
+    auto pos = str.find_last_not_of(chars);
+    return pos == std::string_view::npos ? std::string_view{} : str.substr(0, pos + 1);
+}
+
+inline void trim_right_inplace(std::string& str, std::string_view chars) {
+    auto pos = str.find_last_not_of(chars);
+    if (auto start = pos + 1; start != str.size()) {
+        str.erase(start);
+    }
+}
+
+[[nodiscard]] constexpr std::string_view trim(std::string_view str,
+                                              std::string_view chars) noexcept {
+
+    return trim_right(trim_left(str, chars), chars);
+}
+
+inline void trim_inplace(std::string& str, std::string_view chars) {
+    trim_right_inplace(str, chars);
+    trim_left_inplace(str, chars);
+}
+
 } // namespace esl::strings
 
 #endif // ESL_STRINGS_H_

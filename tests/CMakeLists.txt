@@ -12,6 +12,7 @@ target_sources(esl_test
     strings_join_test.cpp
     strings_match_test.cpp
     strings_split_test.cpp
+    strings_trim_test.cpp
     unique_handle_test.cpp
 )
 
