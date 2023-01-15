@@ -4,11 +4,14 @@ add_library(esl INTERFACE)
 target_sources(esl
   PRIVATE
     byteswap.h
+    file_util.h
     macros.h
     scope_guard.h
     strings.h
     unique_handle.h
 
+    detail/files.h
+    detail/secure_crt.h
     detail/strings_join.h
     detail/strings_match.h
     detail/strings_split.h

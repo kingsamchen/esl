@@ -8,6 +8,7 @@ target_sources(esl_test
     stringification.h
 
     byteswap_test.cpp
+    file_util_test.cpp
     scope_guard_test.cpp
     strings_join_test.cpp
     strings_match_test.cpp
