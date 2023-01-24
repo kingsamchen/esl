@@ -7,6 +7,7 @@
 #ifndef ESL_FILE_UTIL_H_
 #define ESL_FILE_UTIL_H_
 
+#include <cassert>
 #include <cerrno>
 #include <cstdint>
 #include <cstdio>
@@ -17,7 +18,6 @@
 
 #include "esl/detail/files.h"
 #include "esl/detail/secure_crt.h"
-#include "esl/scope_guard.h"
 
 namespace esl {
 
@@ -28,15 +28,11 @@ inline void read_file_to_string(const std::string& path,
     content.clear();
     ec.clear();
 
-    FILE* fp = detail::fopen(path, "rb");
+    auto fp = detail::fopen(path, "rb");
     if (!fp) {
         ec.assign(errno, std::generic_category());
         return;
     }
-
-    ESL_ON_SCOPE_EXIT {
-        std::fclose(fp);
-    };
 
     constexpr auto initial_chunk_size = static_cast<std::size_t>(1024) * 4;
     constexpr auto default_chunk_size = static_cast<std::size_t>(1024) * 16;
@@ -47,20 +43,21 @@ inline void read_file_to_string(const std::string& path,
     // the function call, the `file_size` is 0; then we use the smaller `initial_chunk_size` as the
     // probe size in first read, to reduce possible memory overhead of the `content` resizing, but
     // subsequent reads will reset to using `default_chunk_size` to speed up reading.
-    const std::size_t file_size = detail::get_file_size(fp);
+    const std::size_t file_size = detail::get_file_size(fp.get());
     auto read_chunk_size = file_size > 0 ? file_size + 1 : initial_chunk_size;
     content.resize(read_chunk_size, '\0');
     std::size_t total_size_read{0};
     while (true) {
-        auto size_read = std::fread(content.data() + total_size_read, 1, read_chunk_size, fp);
+        assert(content.size() > total_size_read);
+        auto size_read = std::fread(content.data() + total_size_read, 1, read_chunk_size, fp.get());
         total_size_read += size_read;
         if (size_read != read_chunk_size) {
-            if (ferror(fp)) {
+            if (ferror(fp.get())) {
                 ec.assign(EIO, std::generic_category());
                 break;
             }
 
-            if (feof(fp)) {
+            if (feof(fp.get())) {
                 break;
             }
         }
@@ -88,18 +85,14 @@ inline void read_file_to_string(const std::string& path, std::string& content) {
 inline void write_to_file(const std::string& path, std::string_view content, std::error_code& ec) {
     ec.clear();
 
-    std::FILE* fp = detail::fopen(path, "wb");
+    auto fp = detail::fopen(path, "wb");
     if (!fp) {
         ec.assign(errno, std::generic_category());
         return;
     }
 
-    ESL_ON_SCOPE_EXIT {
-        std::fclose(fp);
-    };
-
-    auto size_written = std::fwrite(content.data(), 1, content.size(), fp);
-    if (size_written != content.size() && ferror(fp)) {
+    auto size_written = std::fwrite(content.data(), 1, content.size(), fp.get());
+    if (size_written != content.size() && ferror(fp.get())) {
         ec.assign(EIO, std::generic_category());
     }
 }

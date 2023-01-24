@@ -10,16 +10,18 @@
 #include <cstdio>
 #include <string>
 
+#include "esl/unique_handle.h"
+
 namespace esl::detail {
 
-inline std::FILE* fopen(const std::string& filepath, const char* mode) {
+inline unique_file fopen(const std::string& filepath, const char* mode) {
 #if defined(_WIN32)
     std::FILE* fp{nullptr};
     // The global errno is set on error anyway.
     (void)::fopen_s(&fp, filepath.c_str(), mode);
-    return fp;
+    return wrap_unique_file(fp);
 #else
-    return std::fopen(filepath.c_str(), mode);
+    return wrap_unique_file(std::fopen(filepath.c_str(), mode));
 #endif
 }
 

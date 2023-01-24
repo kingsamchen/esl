@@ -5,7 +5,9 @@ add_executable(esl_test)
 target_sources(esl_test
   PRIVATE
     test_main.cpp
+
     stringification.h
+    test_util.h
 
     byteswap_test.cpp
     file_util_test.cpp
@@ -24,6 +26,10 @@ target_link_libraries(esl_test
 )
 
 esl_apply_common_compile_options(esl_test)
+
+if(ESL_ENABLE_CLANG_TIDY)
+  esl_apply_clang_tidy(esl_test)
+endif()
 
 if(MSVC)
   if(ESL_USE_MSVC_PARALLEL_BUILD)
