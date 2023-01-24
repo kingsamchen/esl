@@ -93,6 +93,12 @@ public:
 
 private:
     void advance() noexcept {
+        assert(state_ != scan_state::end);
+        assert(delimiter_.has_value());
+        assert(predicate_.has_value());
+
+        // `delimiter_` and `predicate_` are empty only in end iterator.
+        // NOLINTBEGIN(bugprone-unchecked-optional-access)
         do {
             if (state_ == scan_state::last) {
                 pos_ = std::string_view::npos;
@@ -111,6 +117,7 @@ private:
                 pos_ = delim_start + delimiter_->size();
             }
         } while (!(*predicate_)(curr_));
+        // NOLINTEND(bugprone-unchecked-optional-access)
     }
 
 private:

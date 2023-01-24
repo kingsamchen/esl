@@ -7,6 +7,7 @@
 #ifndef ESL_UNIQUE_HANDLE_H_
 #define ESL_UNIQUE_HANDLE_H_
 
+#include <cstdio>
 #include <memory>
 
 #if defined(_WIN32)
@@ -53,7 +54,7 @@ template<typename Traits>
 struct handle_ptr_deleter {
     using pointer = handle_ptr<Traits>;
 
-    void operator()(pointer ptr) {
+    void operator()(pointer ptr) const {
         Traits::close(ptr);
     }
 };
@@ -92,7 +93,8 @@ struct winfile_handle_traits {
         ::CloseHandle(handle);
     }
 
-    static constexpr handle_type null_handle{INVALID_HANDLE_VALUE};
+    // TODO(KC): use std::bit_cast when upgrading to C++20
+    inline static const handle_type null_handle{INVALID_HANDLE_VALUE};
 };
 
 using winfile_handle_deleter = handle_ptr_deleter<winfile_handle_traits>;
@@ -127,6 +129,18 @@ inline unique_fd wrap_unique_fd(int raw_fd) {
 }
 
 #endif
+
+struct file_deleter {
+    void operator()(std::FILE* fp) const noexcept {
+        std::fclose(fp);
+    }
+};
+
+using unique_file = std::unique_ptr<std::FILE, file_deleter>;
+
+inline unique_file wrap_unique_file(std::FILE* fp) {
+    return unique_file(fp);
+}
 
 } // namespace esl
 

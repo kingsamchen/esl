@@ -154,17 +154,17 @@ TEST_CASE("starts with") {
     using namespace std::string_view_literals;
 
     SUBCASE("normal cases") {
-        std::string_view sv = "foobar";
+        const std::string_view sv = "foobar";
         CHECK(strings::starts_with(sv, sv));
         CHECK(strings::starts_with(sv, "foo"));
         CHECK(strings::starts_with(sv, ""sv));
         CHECK_FALSE(strings::starts_with(sv, "foobaz"));
 
-        std::string_view esv;
+        const std::string_view esv;
         CHECK(strings::starts_with(esv, ""));
         CHECK_FALSE(strings::starts_with(esv, sv));
 
-        std::string str = "123\0abc"s;
+        const std::string str = "123\0abc"s;
         CHECK(strings::starts_with(str, str));
         CHECK(strings::starts_with(str, "123\0"s));
         CHECK(strings::starts_with(str, ""sv));
@@ -172,7 +172,7 @@ TEST_CASE("starts with") {
     }
 
     SUBCASE("when |str| < |prefix|") {
-        std::string str = "foo";
+        const std::string str = "foo";
         CHECK_FALSE(strings::starts_with(str, "foobar"));
     }
 
@@ -188,17 +188,17 @@ TEST_CASE("ends with") {
     using namespace std::string_view_literals;
 
     SUBCASE("normal cases") {
-        std::string_view sv = "foobar";
+        const std::string_view sv = "foobar";
         CHECK(strings::ends_with(sv, sv));
         CHECK(strings::ends_with(sv, "bar"));
         CHECK(strings::ends_with(sv, ""sv));
         CHECK_FALSE(strings::ends_with(sv, "foobaz"));
 
-        std::string_view esv;
+        const std::string_view esv;
         CHECK(strings::ends_with(esv, ""));
         CHECK_FALSE(strings::ends_with(esv, sv));
 
-        std::string str = "123\0abc"s;
+        const std::string str = "123\0abc"s;
         CHECK(strings::ends_with(str, str));
         CHECK(strings::ends_with(str, "\0abc"s));
         CHECK(strings::ends_with(str, ""sv));
@@ -206,7 +206,7 @@ TEST_CASE("ends with") {
     }
 
     SUBCASE("when |str| < |suffix|") {
-        std::string str = "bar";
+        const std::string str = "bar";
         CHECK_FALSE(strings::ends_with(str, "foobar"));
     }
 
@@ -222,17 +222,17 @@ TEST_CASE("starts with ignore ascii case") {
     using namespace std::string_view_literals;
 
     SUBCASE("normal cases") {
-        std::string_view sv = "FOOBAR";
+        const std::string_view sv = "FOOBAR";
         CHECK(strings::starts_with_ignore_ascii_case(sv, sv));
         CHECK(strings::starts_with_ignore_ascii_case(sv, "foo"));
         CHECK(strings::starts_with_ignore_ascii_case(sv, ""sv));
         CHECK_FALSE(strings::starts_with_ignore_ascii_case(sv, "foobaz"));
 
-        std::string_view esv;
+        const std::string_view esv;
         CHECK(strings::starts_with_ignore_ascii_case(esv, ""));
         CHECK_FALSE(strings::starts_with_ignore_ascii_case(esv, sv));
 
-        std::string str = "123\0abc"s;
+        const std::string str = "123\0abc"s;
         CHECK(strings::starts_with_ignore_ascii_case(str, str));
         CHECK(strings::starts_with_ignore_ascii_case(str, "123\0"s));
         CHECK(strings::starts_with_ignore_ascii_case(str, ""sv));
@@ -240,7 +240,7 @@ TEST_CASE("starts with ignore ascii case") {
     }
 
     SUBCASE("when |str| < |prefix|") {
-        std::string str = "FOO";
+        const std::string str = "FOO";
         CHECK_FALSE(strings::starts_with_ignore_ascii_case(str, "foobar"));
     }
 
@@ -256,17 +256,17 @@ TEST_CASE("ends with ignore ascii case") {
     using namespace std::string_view_literals;
 
     SUBCASE("normal cases") {
-        std::string_view sv = "FOOBAR";
+        const std::string_view sv = "FOOBAR";
         CHECK(strings::ends_with_ignore_ascii_case(sv, sv));
         CHECK(strings::ends_with_ignore_ascii_case(sv, "bar"));
         CHECK(strings::ends_with_ignore_ascii_case(sv, ""sv));
         CHECK_FALSE(strings::ends_with_ignore_ascii_case(sv, "foobaz"));
 
-        std::string_view esv;
+        const std::string_view esv;
         CHECK(strings::ends_with_ignore_ascii_case(esv, ""));
         CHECK_FALSE(strings::ends_with_ignore_ascii_case(esv, sv));
 
-        std::string str = "123\0abc"s;
+        const std::string str = "123\0abc"s;
         CHECK(strings::ends_with_ignore_ascii_case(str, str));
         CHECK(strings::ends_with_ignore_ascii_case(str, "\0ABC"s));
         CHECK(strings::ends_with_ignore_ascii_case(str, ""sv));
@@ -274,7 +274,7 @@ TEST_CASE("ends with ignore ascii case") {
     }
 
     SUBCASE("when |str| < |suffix|") {
-        std::string str = "bar";
+        const std::string str = "bar";
         CHECK_FALSE(strings::ends_with_ignore_ascii_case(str, "FooBar"));
     }
 

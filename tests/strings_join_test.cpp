@@ -156,7 +156,7 @@ TEST_CASE("to_append overloads") {
     }
 
     SUBCASE("append a char") {
-        char c1 = 'X';
+        constexpr char c1 = 'X';
         strings::detail::to_append(c1, out);
         CHECK_EQ("X", out);
 
@@ -171,24 +171,24 @@ TEST_CASE("to_append overloads") {
 
 TEST_CASE("trivial api examples") {
     SUBCASE("most fundamental api") {
-        std::vector<std::string> strs{"foo", "bar", "baz"};
+        const std::vector<std::string> strs{"foo", "bar", "baz"};
         std::string out;
         strings::join(strs.begin(), strs.end(), "-", out);
         CHECK_EQ("foo-bar-baz", out);
     }
 
     SUBCASE("sequence of std::string") {
-        std::vector<std::string> strs{"foo", "bar", "baz"};
+        const std::vector<std::string> strs{"foo", "bar", "baz"};
         CHECK_EQ("foo-bar-baz", strings::join(strs, "-"));
     }
 
     SUBCASE("sequence of std::string_view") {
-        std::vector<std::string_view> strs{"foo", "bar", "baz"};
+        const std::vector<std::string_view> strs{"foo", "bar", "baz"};
         CHECK_EQ("foo-bar-baz", strings::join(strs, "-"));
     }
 
     SUBCASE("sequence of const char*") {
-        std::vector<const char*> strs{"foo", "bar", "baz"};
+        const std::vector<const char*> strs{"foo", "bar", "baz"};
         CHECK_EQ("foo-bar-baz", strings::join(strs, "-"));
     }
 
@@ -196,12 +196,12 @@ TEST_CASE("trivial api examples") {
         char sz_a[] = "foo";
         char sz_b[] = "bar";
         char sz_c[] = "baz";
-        std::vector<char*> strs{sz_a, sz_b, sz_c};
+        const std::vector<char*> strs{sz_a, sz_b, sz_c};
         CHECK_EQ("foo-bar-baz", strings::join(strs, "-"));
     }
 
     SUBCASE("sequence of char") {
-        std::string chs = "hello";
+        const std::string chs = "hello";
         CHECK_EQ("h-e-l-l-o", strings::join(chs, "-"));
     }
 
@@ -210,14 +210,14 @@ TEST_CASE("trivial api examples") {
     }
 
     SUBCASE("passed as an array") {
-        const char* strs[]{"foo", "bar", "baz"};
+        constexpr const char* strs[]{"foo", "bar", "baz"};
         CHECK_EQ("foo-bar-baz", strings::join(strs, "-"));
     }
 }
 
 TEST_CASE("trivial api edge cases") {
     SUBCASE("empty sequence") {
-        std::vector<std::string> strs;
+        const std::vector<std::string> strs;
 
         SUBCASE("clear original for out apis") {
             std::string s1 = "-";
@@ -231,22 +231,22 @@ TEST_CASE("trivial api edge cases") {
     }
 
     SUBCASE("only one element in sequence returns the element without sep") {
-        std::vector<std::string> strs{"foo"};
+        const std::vector<std::string> strs{"foo"};
         CHECK_EQ("foo", strings::join(strs, "-"));
     }
 
     SUBCASE("when the only element is an empty string") {
-        std::vector<std::string> strs{""};
+        const std::vector<std::string> strs{""};
         CHECK_EQ("", strings::join(strs, "-"));
     }
 
     SUBCASE("a sequence of two empty strings") {
-        std::vector<std::string> strs{"", ""};
+        const std::vector<std::string> strs{"", ""};
         CHECK_EQ("-", strings::join(strs, "-"));
     }
 
     SUBCASE("one of two elements is empty") {
-        std::vector<std::string> strs{"", "foo"};
+        const std::vector<std::string> strs{"", "foo"};
         CHECK_EQ("-foo", strings::join(strs, "-"));
     }
 }
@@ -254,7 +254,7 @@ TEST_CASE("trivial api edge cases") {
 TEST_CASE("appender api examples") {
     SUBCASE("a sequence of pair") {
         // NOLINTNEXTLINE(readability-magic-numbers)
-        std::vector<std::pair<char, int>> seq{{'A', 65}, {'B', 66}, {'C', 67}};
+        const std::vector<std::pair<char, int>> seq{{'A', 65}, {'B', 66}, {'C', 67}};
         auto str = strings::join(seq, " ", [](const auto& e, std::string& out) {
             out.append(1, e.first).append("->").append(std::to_string(e.second));
         });
@@ -262,7 +262,7 @@ TEST_CASE("appender api examples") {
     }
 
     SUBCASE("a sequence of ints") {
-        std::vector<int> ints{1, 3, 5, 7, 9};
+        const std::vector<int> ints{1, 3, 5, 7, 9};
         CHECK_EQ("1 - 3 - 5 - 7 - 9",
                  strings::join(ints, " - ", [](int n, auto& o) { o.append(std::to_string(n)); }));
     }

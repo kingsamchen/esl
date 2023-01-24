@@ -28,12 +28,12 @@ inline std::uint16_t byteswap(std::uint16_t n) noexcept {
 }
 
 inline std::int32_t byteswap(std::int32_t n) noexcept {
-    static_assert(sizeof(std::uint32_t) == sizeof(unsigned long));
+    static_assert(sizeof(std::uint32_t) == sizeof(unsigned long)); // NOLINT(google-runtime-int)
     return static_cast<std::int32_t>(_byteswap_ulong(static_cast<std::uint32_t>(n)));
 }
 
 inline std::uint32_t byteswap(std::uint32_t n) noexcept {
-    static_assert(sizeof(std::uint32_t) == sizeof(unsigned long));
+    static_assert(sizeof(std::uint32_t) == sizeof(unsigned long)); // NOLINT(google-runtime-int)
     return _byteswap_ulong(n);
 }
 

@@ -61,12 +61,12 @@ TEST_CASE("split iterator") {
     SUBCASE("compare against end iterator") {
         using iter_t = detail::split_iterator<strings::by_string, allow_any_t>;
 
-        iter_t end1;
-        iter_t end2;
+        const iter_t end1;
+        const iter_t end2;
         CHECK_EQ(end1, end2);
 
-        iter_t iter("abc\ndef", 0, strings::by_string("\n"), allow_any);
-        iter_t it_end("abc\ndef");
+        const iter_t iter("abc\ndef", 0, strings::by_string("\n"), allow_any);
+        const iter_t it_end("abc\ndef");
         CHECK_NE(iter, end1);
         CHECK_NE(iter, it_end);
         CHECK_EQ(it_end, end1);
@@ -87,11 +87,11 @@ TEST_CASE("split iterator") {
 
     SUBCASE("iterate by string delimiter and allow any token") {
         using iter_t = detail::split_iterator<strings::by_string, allow_any_t>;
-        strings::by_string delim("\r\n");
+        const strings::by_string delim("\r\n");
         std::vector<std::string_view> tokens;
 
         SUBCASE("normal case") {
-            std::string str{"abc\r\ndef\r\nfoobar"};
+            const std::string str{"abc\r\ndef\r\nfoobar"};
             for (iter_t it(str, 0, delim, allow_any); it != iter_t{}; ++it) {
                 tokens.push_back(*it);
             }
@@ -100,7 +100,7 @@ TEST_CASE("split iterator") {
         }
 
         SUBCASE("empty input") {
-            std::string_view sv{};
+            const std::string_view sv{};
 
             for (iter_t it(sv, 0, delim, allow_any); it != iter_t{}; ++it) {
                 tokens.push_back(*it);
@@ -110,7 +110,7 @@ TEST_CASE("split iterator") {
         }
 
         SUBCASE("input doesn't contain delim") {
-            std::string_view sv = "foobar";
+            const std::string_view sv = "foobar";
             for (iter_t it(sv, 0, delim, allow_any); it != iter_t{}; ++it) {
                 tokens.push_back(*it);
             }
@@ -119,7 +119,7 @@ TEST_CASE("split iterator") {
         }
 
         SUBCASE("input contains only delim") {
-            std::string_view sv = "\r\n";
+            const std::string_view sv = "\r\n";
             for (iter_t it(sv, 0, delim, allow_any); it != iter_t{}; ++it) {
                 tokens.push_back(*it);
             }
@@ -128,8 +128,8 @@ TEST_CASE("split iterator") {
         }
 
         SUBCASE("multipass support") {
-            std::string str{"abc\r\ndef\r\nfoobar"};
-            iter_t it(str, 0, delim, allow_any);
+            const std::string str{"abc\r\ndef\r\nfoobar"};
+            const iter_t it(str, 0, delim, allow_any);
             // `it` is copied as the parameter.
             auto distance = std::distance(it, iter_t{});
             CHECK_EQ(distance, 3);
@@ -143,7 +143,7 @@ TEST_CASE("split iterator") {
 
     SUBCASE("use predicate to filter tokens") {
         using iter_t = detail::split_iterator<strings::by_string, not_empty_t>;
-        std::string str{"abc\r\n\r\ndef\r\n\r\n"};
+        const std::string str{"abc\r\n\r\ndef\r\n\r\n"};
         std::vector<std::string_view> tokens;
         iter_t it(str, 0, strings::by_string("\r\n"), not_empty);
         size_t incr_count = 0;
@@ -156,7 +156,7 @@ TEST_CASE("split iterator") {
 
     SUBCASE("split by any character") {
         using iter_t = detail::split_iterator<strings::by_any_char, not_empty_t>;
-        std::string str{"abc\r\n\r\ndef\n\r\n\r"};
+        const std::string str{"abc\r\n\r\ndef\n\r\n\r"};
         std::vector<std::string_view> tokens;
         iter_t it(str, 0, strings::by_any_char("\r\n"), not_empty);
         size_t incr_count = 0;
@@ -200,7 +200,7 @@ TEST_CASE("split view type constraints") {
 TEST_CASE("split view to container usages") {
     using split_view =
             detail::split_view<std::string_view, strings::by_any_char, strings::skip_empty>;
-    split_view splitter("-foo--bar--baz--hello--world-", strings::by_any_char{"-"}, {});
+    const split_view splitter("-foo--bar--baz--hello--world-", strings::by_any_char{"-"}, {});
 
     auto vec_sv = splitter.to<std::vector<std::string_view>>();
     CHECK_EQ(vec_sv, std::vector<std::string_view>{"foo", "bar", "baz", "hello", "world"});
@@ -211,7 +211,7 @@ TEST_CASE("split view to container usages") {
 
 TEST_CASE_TEMPLATE("split view with StringTypes", StringType, std::string_view, std::string) {
     using split_view = detail::split_view<StringType, strings::by_any_char, strings::skip_empty>;
-    split_view splitter("-foo--bar--baz--hello--world-", strings::by_any_char{"-"}, {});
+    const split_view splitter("-foo--bar--baz--hello--world-", strings::by_any_char{"-"}, {});
 
     // Because `split_view` now is a dependent type because of `StringType` argument.
     // The `template` keyword before `to()` is a must.

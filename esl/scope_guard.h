@@ -4,10 +4,11 @@
 
 #pragma once
 
-#ifndef ESL_SCOPE_GUARD
-#define ESL_SCOPE_GUARD
+#ifndef ESL_SCOPE_GUARD_H_
+#define ESL_SCOPE_GUARD_H_
 
 #include <cstddef>
+#include <cstdio>
 #include <exception>
 #include <functional>
 #include <type_traits>
@@ -70,7 +71,15 @@ public:
 
     ~scope_guard() {
         if (!dismissed()) {
-            guard_fn_();
+            try {
+                guard_fn_();
+            } catch (const std::exception& ex) {
+                std::fprintf(stderr, "exception thrown in guard function: %s\n", ex.what());
+                std::abort();
+            } catch (...) {
+                std::fprintf(stderr, "unknown exception thrown in guard function\n");
+                std::abort();
+            }
         }
     }
 
@@ -186,24 +195,23 @@ template<typename F>
 
 } // namespace esl
 
-// TODO: Use block NOLINT only once upgraded to clang-tidy 15.
 // NOLINTBEGIN(bugprone-macro-parentheses)
 
 #define ESL_MAKE_EXIT_GUARD \
-    ::esl::detail::scope_guard_on_exit{} + [&]() noexcept // NOLINT
+    ::esl::detail::scope_guard_on_exit{} + [&]() noexcept
 
 #define ESL_ON_SCOPE_EXIT                                 \
     [[maybe_unused]] auto ESL_ANONYMOUS_VAR(scope_exit) = \
-            ::esl::detail::scope_guard_on_exit{} + [&]() noexcept // NOLINT
+            ::esl::detail::scope_guard_on_exit{} + [&]() noexcept
 
 #define ESL_ON_SCOPE_FAIL                                 \
     [[maybe_unused]] auto ESL_ANONYMOUS_VAR(scope_fail) = \
-            ::esl::detail::scope_guard_on_fail{} + [&]() noexcept // NOLINT
+            ::esl::detail::scope_guard_on_fail{} + [&]() noexcept
 
 #define ESL_ON_SCOPE_SUCCESS                                 \
     [[maybe_unused]] auto ESL_ANONYMOUS_VAR(scope_success) = \
-            ::esl::detail::scope_guard_on_success{} + [&]() noexcept // NOLINT
+            ::esl::detail::scope_guard_on_success{} + [&]() noexcept
 
 // NOLINTEND(bugprone-macro-parentheses)
 
-#endif // ESL_SCOPE_GUARD
+#endif // ESL_SCOPE_GUARD_H_

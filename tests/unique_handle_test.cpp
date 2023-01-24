@@ -2,15 +2,17 @@
 // This file is subject to the terms of license that can be found
 // in the LICENSE file.
 
+#include <tuple>
 #include <type_traits>
-
-#include "doctest/doctest.h"
-
-#include "esl/unique_handle.h"
 
 #if !defined(_WIN32)
 #include <fcntl.h>
 #endif
+
+#include "doctest/doctest.h"
+
+#include "esl/unique_handle.h"
+#include "tests/test_util.h"
 
 namespace {
 
@@ -43,6 +45,16 @@ struct is_equality_comparable<
 template<typename T>
 inline constexpr bool is_equality_comparable_v = is_equality_comparable<T>::value;
 
+std::FILE* safe_fopen(const char* path, const char* mode) {
+#if defined(_WIN32)
+    std::FILE* fp{};
+    std::ignore = ::fopen_s(&fp, path, mode);
+    return fp;
+#else
+    return std::fopen(path, mode);
+#endif
+}
+
 TEST_SUITE_BEGIN("unique_handle");
 
 TEST_CASE("handle_ptr must meet nullability expression requirements") {
@@ -64,13 +76,13 @@ TEST_CASE("handle_ptr must meet nullability expression requirements") {
 
     SUBCASE("must be contextually convertible to bool") {
         {
-            fake_handle_ptr ptr1{};
+            const fake_handle_ptr ptr1{};
             bool valid = static_cast<bool>(ptr1);
             CHECK_FALSE(valid);
         }
 
         {
-            fake_handle_ptr ptr2{1};
+            const fake_handle_ptr ptr2{1};
             bool valid = static_cast<bool>(ptr2);
             CHECK(valid);
         }
@@ -174,7 +186,7 @@ TEST_CASE("unique_winfile_handle should satisfy") {
     }
 
     SUBCASE("0 handle value is a valid value for unique_winfile_handle") {
-        auto handle = wrap_unique_winfile_handle(static_cast<HANDLE>(NULL));
+        auto handle = wrap_unique_winfile_handle(nullptr);
         CHECK(handle != nullptr);
     }
 }
@@ -209,6 +221,31 @@ TEST_CASE("unique_fd should satisfy") {
 }
 
 #endif
+
+TEST_CASE("unique_file as FILE* wrapper") {
+    using esl::unique_file;
+    static_assert(std::is_same_v<unique_file::pointer, std::FILE*>);
+    static_assert(std::is_same_v<unique_file::element_type, std::FILE>);
+    static_assert(std::is_same_v<unique_file::deleter_type, esl::file_deleter>);
+
+    SUBCASE("simple use case") {
+        unique_file file;
+        REQUIRE(file == nullptr);
+        auto raw_fp = safe_fopen(tests::new_test_filepath().c_str(), "w");
+        INFO("create file for writing failed; errno=", errno);
+        REQUIRE(raw_fp != nullptr);
+        file = esl::wrap_unique_file(raw_fp);
+        CHECK(file != nullptr);
+        const std::string str{"this is a test text"};
+        auto size_written = std::fwrite(str.data(), 1, str.size(), file.get());
+        CHECK_EQ(size_written, str.size());
+
+        // Now reset the unique file.
+        file = nullptr;
+        CHECK(file == nullptr);
+        CHECK_EQ(file.get(), nullptr);
+    }
+}
 
 TEST_SUITE_END();
 
