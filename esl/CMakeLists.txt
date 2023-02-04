@@ -39,3 +39,6 @@ target_compile_definitions(esl
       _DEBUG
     >
 )
+
+get_target_property(esl_FILES esl SOURCES)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${esl_FILES})

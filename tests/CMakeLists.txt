@@ -45,6 +45,6 @@ else()
 endif()
 
 get_target_property(test_FILES esl_test SOURCES)
-source_group("esl_test" FILES ${test_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${test_FILES})
 
 add_test(NAME tests COMMAND esl_test)
