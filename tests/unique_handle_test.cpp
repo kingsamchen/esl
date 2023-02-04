@@ -134,6 +134,35 @@ TEST_CASE("handle_ptr must meet nullability expression requirements") {
     }
 }
 
+struct close_test_traits : fake_handle_traits {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+    inline static bool close_invoked{false};
+
+    static void close(handle_type) noexcept {
+        close_invoked = true;
+    }
+};
+
+TEST_CASE("Won't close the handle ptr if null") {
+    using ptr_type = std::unique_ptr<close_test_traits::handle_type,
+                                     esl::handle_ptr_deleter<close_test_traits>>;
+    // A null pointer won't invoke Traits::close() when reset or destruct.
+    // Traits::close() itself doesn't need to check nullable.
+    {
+        const ptr_type p;
+        REQUIRE(p == nullptr);
+        REQUIRE_EQ(close_test_traits::close_invoked, false);
+    }
+    REQUIRE_EQ(close_test_traits::close_invoked, false);
+
+    // Traits::close() will be invokved.
+    {
+        const ptr_type p{1};
+        REQUIRE(p != nullptr);
+    }
+    CHECK_EQ(close_test_traits::close_invoked, true);
+}
+
 #if defined(_WIN32)
 
 TEST_CASE("unique_win_handle should work as expected") {
