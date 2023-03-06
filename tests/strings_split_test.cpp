@@ -240,7 +240,7 @@ TEST_CASE_TEMPLATE("split view with StringTypes", StringType, std::string_view, 
     }
 }
 
-TEST_CASE("Delimiter selector") {
+TEST_CASE("delimiter selector") {
     SUBCASE("a delimiter itself will be selected") {
         static_assert(std::is_same_v<detail::select_delimiter<strings::by_string>::type,
                                      strings::by_string>);
@@ -263,6 +263,83 @@ TEST_CASE("Delimiter selector") {
                                      strings::by_string>);
         static_assert(std::is_same_v<detail::select_delimiter<std::string>::type,
                                      strings::by_string>);
+    }
+}
+
+TEST_CASE("delimiter by_string") {
+    SUBCASE("construct from std::string") {
+        const std::string d{"\r\n\t"};
+        [[maybe_unused]] const strings::by_string bs(d);
+    }
+
+    SUBCASE("construct from string_view") {
+        constexpr std::string_view d{"\r\n\t"};
+        [[maybe_unused]] const strings::by_string bs(d);
+    }
+
+    SUBCASE("construct from null-terminated string") {
+        const char* const d = "\r\n\t";
+        [[maybe_unused]] const strings::by_string bs(d);
+    }
+
+    SUBCASE("size should return delimiter length") {
+        constexpr std::string_view d{"\r\n\t"};
+        const strings::by_string bs(d);
+        CHECK_EQ(bs.size(), d.size());
+    }
+
+    SUBCASE("by_string should be exact match") {
+        const strings::by_string d("\r\n");
+        const std::string text = "this is\na\rtest text\r\n";
+        const auto pos = d.find(text, 0);
+        CHECK_EQ(pos, text.size() - 2);
+    }
+}
+
+TEST_CASE("delimiter by_char") {
+    SUBCASE("size is fixed to 1") {
+        const strings::by_char bc('\n');
+        CHECK_EQ(bc.size(), 1);
+    }
+
+    SUBCASE("find in text") {
+        const std::string text = "foobar\nfoo\rbaz";
+        const strings::by_char bc('\n');
+        CHECK_EQ(bc.find(text, 0), text.find('\n'));
+        CHECK_EQ(bc.find(text, text.find('\n') + 1), std::string::npos);
+    }
+}
+
+TEST_CASE("delimiter by_any_char") {
+    SUBCASE("construct from std::string") {
+        const std::string d{"\r\n\t"};
+        [[maybe_unused]] const strings::by_any_char bac(d);
+    }
+
+    SUBCASE("construct from string_view") {
+        constexpr std::string_view d{"\r\n\t"};
+        [[maybe_unused]] const strings::by_any_char bac(d);
+    }
+
+    SUBCASE("construct from null-terminated string") {
+        const char* const d = "\r\n\t";
+        [[maybe_unused]] const strings::by_any_char bac(d);
+    }
+
+    SUBCASE("size is fixed to 1") {
+        const strings::by_any_char bac("\r\n\t");
+        CHECK_EQ(bac.size(), 1);
+    }
+
+    SUBCASE("can match any char") {
+        const strings::by_any_char bac("\r\n\t");
+        const std::string text = "this is \r\n a test text\t";
+        auto pos = bac.find(text, 0);
+        CHECK_EQ(pos, text.find('\r'));
+        pos = bac.find(text, pos + 1);
+        CHECK_EQ(pos, text.find('\n'));
+        pos = bac.find(text, pos + 1);
+        CHECK_EQ(pos, text.find('\t'));
     }
 }
 

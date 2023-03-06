@@ -137,6 +137,11 @@ public:
         assert(!delimiter_.empty());
     }
 
+    template<typename StringViewLike,
+             std::enable_if_t<std::is_same_v<StringViewLike, std::string_view>, int> = 0>
+    explicit by_string(StringViewLike delim)
+        : by_string(std::string{delim}) {}
+
     std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         return delimiter_.size() == 1 ? text.find(delimiter_[0], pos)
                                       : text.find(delimiter_, pos);
@@ -174,6 +179,11 @@ public:
         : delimiters_(std::move(delims)) {
         assert(!delimiters_.empty());
     }
+
+    template<typename StringViewLike,
+             std::enable_if_t<std::is_same_v<StringViewLike, std::string_view>, int> = 0>
+    explicit by_any_char(StringViewLike delim)
+        : by_any_char(std::string{delim}) {}
 
     std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         return delimiters_.size() == 1 ? text.find_first_of(delimiters_[0], pos)
