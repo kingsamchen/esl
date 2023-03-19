@@ -25,13 +25,46 @@ struct incrementer {
         : value(initial) {}
 
     void operator()() {
+        std::ignore = this;
         ++value;
+    }
+};
+
+struct throw_on_copy_invoker {
+    std::reference_wrapper<int> invoked_counter;
+    const int throw_after_copied{0};
+    int copied_counter{0};
+
+    ~throw_on_copy_invoker() = default;
+    throw_on_copy_invoker& operator=(const throw_on_copy_invoker&) = delete;
+    throw_on_copy_invoker& operator=(throw_on_copy_invoker&&) = delete;
+
+    throw_on_copy_invoker(int& ref, int allow_copied_count)
+        : invoked_counter(ref),
+          throw_after_copied(allow_copied_count) {}
+
+    // Force scope_guard copying this invoker.
+    throw_on_copy_invoker(throw_on_copy_invoker&& other) noexcept(false) = default;
+
+    throw_on_copy_invoker(const throw_on_copy_invoker& other)
+        : invoked_counter(other.invoked_counter),
+          throw_after_copied(other.throw_after_copied),
+          copied_counter(other.copied_counter + 1) {
+
+        if (copied_counter > throw_after_copied) {
+            throw std::runtime_error("intended throw");
+        }
+    }
+
+    void operator()() {
+        std::ignore = this;
+        ++invoked_counter.get();
     }
 };
 
 TEST_SUITE_BEGIN("scope_guard");
 
-TEST_CASE("non-copyable/non-movable") {
+TEST_CASE("non-copyable, non-move-assignable but move-constructible") {
     auto fn = [] {
         (void)0;
     };
@@ -41,8 +74,31 @@ TEST_CASE("non-copyable/non-movable") {
 
     [[maybe_unused]] auto guard = make_scope_guard(fn);
     using guard_t = decltype(guard);
+
     CHECK_FALSE(std::is_copy_constructible_v<guard_t>);
-    CHECK_FALSE(std::is_move_constructible_v<guard_t>);
+    CHECK_FALSE(std::is_copy_assignable_v<guard_t>);
+    CHECK_FALSE(std::is_move_assignable_v<guard_t>);
+
+    CHECK(std::is_move_constructible_v<guard_t>);
+}
+
+TEST_CASE("well behaved when guard function can't guarantee nothrow move and throws during copy") {
+    int invoked_counter{0};
+    throw_on_copy_invoker toc(invoked_counter, 1);
+    REQUIRE_FALSE(std::is_nothrow_move_constructible_v<throw_on_copy_invoker>);
+    REQUIRE(std::is_copy_constructible_v<throw_on_copy_invoker>);
+
+    // Move construction will however enforce copying guarding function and then throws.
+    // The new guard hasn't constructed at that moment, so it won't execute the guard function;
+    // but the moved-from guard will clean up immediately.
+    CHECK_THROWS([&] {
+        // Copy is also triggered when saving inside the guard.
+        [[maybe_unused]] auto guard = make_scope_guard(std::move(toc));
+        REQUIRE_FALSE(std::is_nothrow_move_constructible_v<decltype(guard)>);
+        [[maybe_unused]] auto new_guard{std::move(guard)};
+    }());
+
+    CHECK_EQ(invoked_counter, 1);
 }
 
 TEST_CASE("support different types of guard function") {
@@ -238,6 +294,18 @@ TEST_CASE("handy macros") {
             CHECK_FALSE(guard_executed);
         }
     }
+}
+
+TEST_CASE("allow to throw inside scope_guard_on_success") {
+    bool guard_executed = false;
+
+    CHECK_THROWS([&guard_executed] {
+        ESL_ON_SCOPE_SUCCESS {
+            guard_executed = true;
+            throw std::runtime_error("intended exception");
+        };
+    }());
+    CHECK(guard_executed);
 }
 
 TEST_SUITE_END();

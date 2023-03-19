@@ -19,8 +19,9 @@
 namespace esl {
 namespace detail {
 
-// A scope_guard instance is neither copyable nor movable, but guaranteed copy elision makes
-// it able to be returned from a function.
+//
+// scope_guard_base
+//
 
 class scope_guard_base {
 public:
@@ -49,12 +50,15 @@ protected:
         return scope_guard_base{};
     }
 
-private:
-    bool dismissed_{false};
+    bool dismissed_{false}; // NOLINT(misc-non-private-member-variables-in-classes)
 };
 
-// Invoking the guard function must not throw.
-template<typename Fn>
+//
+// scoped_guard & scoped_guard_on_exit
+//
+
+// Allow to be move-constructed.
+template<typename Fn, bool InvokeNoexcept>
 class scope_guard : public scope_guard_base {
 public:
     explicit scope_guard(const Fn& fn) noexcept(std::is_nothrow_copy_constructible_v<Fn>)
@@ -69,23 +73,23 @@ public:
         : scope_guard(std::move_if_noexcept(fn),
                       make_failsafe(std::is_nothrow_move_constructible<Fn>{}, &fn)) {}
 
-    ~scope_guard() {
+    ~scope_guard() noexcept(InvokeNoexcept) { // NOLINT(bugprone-exception-escape)
         if (!dismissed()) {
-            try {
+            if (InvokeNoexcept) {
+                execute_or_die();
+            } else {
                 guard_fn_();
-            } catch (const std::exception& ex) {
-                std::fprintf(stderr, "exception thrown in guard function: %s\n", ex.what());
-                std::abort();
-            } catch (...) {
-                std::fprintf(stderr, "unknown exception thrown in guard function\n");
-                std::abort();
             }
         }
     }
 
     scope_guard(const scope_guard&) = delete;
 
-    scope_guard(scope_guard&&) = delete;
+    // NOLINTNEXTLINE(bugprone-exception-escape, performance-noexcept-move-constructor)
+    scope_guard(scope_guard&& other) noexcept(std::is_nothrow_move_constructible_v<Fn>)
+        : guard_fn_(std::move_if_noexcept(other.guard_fn_)) { // NOLINT(*-move-constructor-init)
+        dismissed_ = std::exchange(other.dismissed_, true);   // NOLINT(*-prefer-member-initializer)
+    }
 
     scope_guard& operator=(const scope_guard&) = delete;
 
@@ -109,7 +113,19 @@ private:
 
     template<typename F>
     static auto make_failsafe(std::false_type /* nothrow */, F* pfn) noexcept {
-        return scope_guard<decltype(std::ref(*pfn))>(std::ref(*pfn));
+        return scope_guard<decltype(std::ref(*pfn)), InvokeNoexcept>(std::ref(*pfn));
+    }
+
+    void execute_or_die() noexcept {
+        try {
+            guard_fn_();
+        } catch (const std::exception& ex) {
+            std::fprintf(stderr, "exception thrown in guard function: %s\n", ex.what());
+            std::abort();
+        } catch (...) {
+            std::fprintf(stderr, "unknown exception thrown in guard function\n");
+            std::abort();
+        }
     }
 
 private:
@@ -117,7 +133,7 @@ private:
 };
 
 template<typename F>
-using scope_guard_decay = scope_guard<std::decay_t<F>>;
+using scope_guard_decay = scope_guard<std::decay_t<F>, true>;
 
 struct scope_guard_on_exit {};
 
@@ -127,6 +143,10 @@ scope_guard_decay<F> operator+(scope_guard_on_exit, F&& fn) noexcept(
     return scope_guard_decay<F>(std::forward<F>(fn));
 }
 
+//
+// scope_guard_for_new_exception & scope_guard_on_fail/success
+//
+
 template<typename Fn, bool ExecuteOnException>
 class scope_guard_for_new_exception {
 public:
@@ -134,15 +154,11 @@ public:
             std::is_nothrow_copy_constructible_v<Fn>)
         : guard_(fn) {}
 
-    explicit scope_guard_for_new_exception(Fn& fn) noexcept(
-            std::is_nothrow_copy_constructible_v<Fn>)
-        : guard_(fn) {}
-
     explicit scope_guard_for_new_exception(Fn&& fn) noexcept(
             std::is_nothrow_move_constructible_v<Fn>)
-        : guard_(std::move(fn)) {}
+        : guard_(std::move_if_noexcept(fn)) {}
 
-    ~scope_guard_for_new_exception() {
+    ~scope_guard_for_new_exception() noexcept(ExecuteOnException) {
         if ((exception_cnt_ < std::uncaught_exceptions()) != ExecuteOnException) {
             guard_.dismiss();
         }
@@ -150,7 +166,8 @@ public:
 
     scope_guard_for_new_exception(const scope_guard_for_new_exception&) = delete;
 
-    scope_guard_for_new_exception(scope_guard_for_new_exception&&) = delete;
+    // NOLINTNEXTLINE(performance-noexcept-move-constructor)
+    scope_guard_for_new_exception(scope_guard_for_new_exception&&) = default;
 
     scope_guard_for_new_exception& operator=(const scope_guard_for_new_exception&) = delete;
 
@@ -161,7 +178,7 @@ public:
     void operator delete(void*) = delete;
 
 private:
-    scope_guard<Fn> guard_;
+    scope_guard<Fn, ExecuteOnException> guard_;
     int exception_cnt_{std::uncaught_exceptions()};
 };
 
@@ -180,12 +197,15 @@ scope_guard_for_new_exception_decay<F, true> operator+(scope_guard_on_fail, F&& 
 struct scope_guard_on_success {};
 
 template<typename F>
-scope_guard_for_new_exception_decay<F, false> operator+(scope_guard_on_success, F&& fn) noexcept(
-        noexcept(scope_guard_for_new_exception_decay<F, false>(std::forward<F>(fn)))) {
+scope_guard_for_new_exception_decay<F, false> operator+(scope_guard_on_success, F&& fn) {
     return scope_guard_for_new_exception_decay<F, false>(std::forward<F>(fn));
 }
 
 } // namespace detail
+
+//
+// make_scope_guard
+//
 
 template<typename F>
 [[nodiscard]] detail::scope_guard_decay<F> make_scope_guard(F&& fn) noexcept(
@@ -197,9 +217,6 @@ template<typename F>
 
 // NOLINTBEGIN(bugprone-macro-parentheses)
 
-#define ESL_MAKE_EXIT_GUARD \
-    ::esl::detail::scope_guard_on_exit{} + [&]() noexcept
-
 #define ESL_ON_SCOPE_EXIT                                 \
     [[maybe_unused]] auto ESL_ANONYMOUS_VAR(scope_exit) = \
             ::esl::detail::scope_guard_on_exit{} + [&]() noexcept
@@ -210,7 +227,7 @@ template<typename F>
 
 #define ESL_ON_SCOPE_SUCCESS                                 \
     [[maybe_unused]] auto ESL_ANONYMOUS_VAR(scope_success) = \
-            ::esl::detail::scope_guard_on_success{} + [&]() noexcept
+            ::esl::detail::scope_guard_on_success{} + [&]()
 
 // NOLINTEND(bugprone-macro-parentheses)
 
