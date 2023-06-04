@@ -19,7 +19,7 @@ int trivial_fn() {
 }
 
 struct incrementer {
-    int& value;
+    std::reference_wrapper<int> value;
 
     explicit incrementer(int& initial)
         : value(initial) {}
@@ -32,7 +32,7 @@ struct incrementer {
 
 struct throw_on_copy_invoker {
     std::reference_wrapper<int> invoked_counter;
-    const int throw_after_copied{0};
+    int throw_after_copied{0};
     int copied_counter{0};
 
     ~throw_on_copy_invoker() = default;

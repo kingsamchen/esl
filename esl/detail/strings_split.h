@@ -92,13 +92,16 @@ public:
     }
 
 private:
-    void advance() noexcept {
+    void advance() {
         assert(state_ != scan_state::end);
         assert(delimiter_.has_value());
         assert(predicate_.has_value());
 
+        if (state_ == scan_state::end || !delimiter_.has_value() || !predicate_.has_value()) {
+            throw std::logic_error("cannot advance an invalid split_iterator");
+        }
+
         // `delimiter_` and `predicate_` are empty only in end iterator.
-        // NOLINTBEGIN(bugprone-unchecked-optional-access)
         do {
             if (state_ == scan_state::last) {
                 pos_ = std::string_view::npos;
@@ -117,7 +120,6 @@ private:
                 pos_ = delim_start + delimiter_->size();
             }
         } while (!(*predicate_)(curr_));
-        // NOLINTEND(bugprone-unchecked-optional-access)
     }
 
 private:
