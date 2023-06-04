@@ -67,9 +67,9 @@ class uniconf_subsystem():
 
         self._src = pathlib.Path(__file__).resolve().parent
 
-        dir_name = self._gen.strip().replace(' ', '-').lower() +\
+        dir_name = self._gen.strip().replace(' ', '-') +\
                    '-' + self._build_type
-        self._out = pathlib.Path(self._src) / 'out' / 'build' / dir_name
+        self._out = pathlib.Path(self._src) / 'out' / dir_name
 
         self._cpm_cache = params['cpm_cache_dir']
         self._clang_tidy = params['clang_tidy']
@@ -121,10 +121,10 @@ class multiconf_subsystem():
 
         self._src = pathlib.Path(__file__).resolve().parent
 
-        normed_gen = self._gen.strip().replace(' ', '-').lower()
+        normed_gen = self._gen.strip().replace(' ', '-')
         if normed_gen == '' and platform.system() == OS_WIN:
             normed_gen = 'msvc'
-        self._out = pathlib.Path(self._src) / 'out' / 'build' / normed_gen
+        self._out = pathlib.Path(self._src) / 'out' / normed_gen
 
         self._cpm_cache = params['cpm_cache_dir']
         self._clang_tidy = params['clang_tidy']

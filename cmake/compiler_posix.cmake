@@ -26,17 +26,16 @@ function(esl_apply_common_compile_options TARGET)
     PRIVATE
       -Wall
       -Wextra
-      -Wno-deprecated
-      -Wno-deprecated-declarations
-      -Wno-sign-compare
-      -Wno-unused
-      -Wno-unused-parameter
+      -Werror
+      -Wconversion
+      -Wdouble-promotion
       -Wold-style-cast
       -Woverloaded-virtual
       -Wpointer-arith
       -Wshadow
-      -Wunused-label
-      -Wunused-result
+      -Wsign-conversion
+      -Wno-unused-function
+      -Wno-error=deprecated
   )
 endfunction()
 

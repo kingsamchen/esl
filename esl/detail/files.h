@@ -38,7 +38,7 @@ inline std::size_t get_file_size(std::FILE* fp) {
 #else
     struct stat64 file_stat {};
     const int ret = ::fstat64(::fileno(fp), &file_stat);
-    return ret == 0 ? file_stat.st_size : 0;
+    return ret == 0 ? static_cast<std::size_t>(file_stat.st_size) : 0;
 #endif
 }
 
