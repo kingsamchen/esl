@@ -164,7 +164,7 @@ public:
         return text.find(ch_, pos);
     }
 
-    std::size_t size() const noexcept { // NOLINT(readability-convert-member-functions-to-static)
+    static std::size_t size() noexcept {
         return 1;
     }
 
@@ -190,12 +190,33 @@ public:
                                        : text.find_first_of(delimiters_, pos);
     }
 
-    std::size_t size() const noexcept { // NOLINT(readability-convert-member-functions-to-static)
+    static std::size_t size() noexcept {
         return 1;
     }
 
 private:
     std::string delimiters_;
+};
+
+// The behavior is undefined if given `len` is 0.
+class by_length {
+public:
+    explicit by_length(std::size_t len)
+        : limit_len_(len) {
+        assert(len > 0);
+    }
+
+    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+        const auto next_pos = pos + limit_len_;
+        return next_pos < text.size() ? next_pos : std::string_view::npos;
+    }
+
+    static std::size_t size() noexcept {
+        return 0;
+    }
+
+private:
+    std::size_t limit_len_;
 };
 
 struct allow_any {

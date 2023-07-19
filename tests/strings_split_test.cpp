@@ -343,6 +343,38 @@ TEST_CASE("delimiter by_any_char") {
     }
 }
 
+TEST_CASE("delimiter by_length") {
+    SUBCASE("split by length into multiple group") {
+        auto v = strings::split("12345", strings::by_length(2)).to<std::vector<std::string>>();
+        REQUIRE_EQ(v.size(), 3);
+        CHECK_EQ(v[0], "12");
+        CHECK_EQ(v[1], "34");
+        CHECK_EQ(v[2], "5");
+    }
+
+    SUBCASE("length is exactly same as the string size") {
+        auto v = strings::split("12345", strings::by_length(5)).to<std::vector<std::string>>();
+        REQUIRE_EQ(v.size(), 1);
+        CHECK_EQ(v[0], "12345");
+    }
+
+    SUBCASE("length is greater than string size") {
+        auto v = strings::split("12345", strings::by_length(6)).to<std::vector<std::string>>();
+        REQUIRE_EQ(v.size(), 1);
+        CHECK_EQ(v[0], "12345");
+    }
+
+    SUBCASE("one by one") {
+        auto v = strings::split("12345", strings::by_length(1)).to<std::vector<std::string>>();
+        REQUIRE_EQ(v.size(), 5);
+        CHECK_EQ(v[0], "1");
+        CHECK_EQ(v[1], "2");
+        CHECK_EQ(v[2], "3");
+        CHECK_EQ(v[3], "4");
+        CHECK_EQ(v[4], "5");
+    }
+}
+
 TEST_CASE("split functions") {
     SUBCASE("normal usages") {
         SUBCASE("auto deduce as by_char delimiter") {
