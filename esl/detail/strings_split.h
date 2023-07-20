@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_DETAIL_STRINGS_SPLIT_H_
-#define ESL_DETAIL_STRINGS_SPLIT_H_
-
 #include <cassert>
 #include <cstddef>
 #include <iterator>
@@ -16,7 +13,12 @@
 #include <type_traits>
 #include <vector>
 
-namespace esl::strings::detail {
+namespace esl::strings {
+
+class by_char;
+class by_string;
+
+namespace detail {
 
 template<typename Delimiter, typename Predicate>
 class split_iterator {
@@ -273,6 +275,35 @@ private:
     Predicate predicate_;
 };
 
-} // namespace esl::strings::detail
+template<typename Delimiter>
+struct select_delimiter {
+    using type = Delimiter;
+};
 
-#endif // ESL_DETAIL_STRINGS_SPLIT_H_
+template<>
+struct select_delimiter<char> {
+    using type = by_char;
+};
+
+template<>
+struct select_delimiter<char*> {
+    using type = by_string;
+};
+
+template<>
+struct select_delimiter<const char*> {
+    using type = by_string;
+};
+
+template<>
+struct select_delimiter<std::string_view> {
+    using type = by_string;
+};
+
+template<>
+struct select_delimiter<std::string> {
+    using type = by_string;
+};
+
+} // namespace detail
+} // namespace esl::strings

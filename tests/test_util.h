@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_TESTS_TEST_UTIL_H_
-#define ESL_TESTS_TEST_UTIL_H_
-
 #include <chrono>
 #include <filesystem>
 #include <random>
@@ -26,5 +23,3 @@ inline std::string new_test_filepath() {
 }
 
 } // namespace tests
-
-#endif // ESL_TESTS_TEST_UTIL_H_

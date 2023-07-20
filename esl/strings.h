@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_STRINGS_H_
-#define ESL_STRINGS_H_
-
 #include <cassert>
 #include <string>
 #include <string_view>
@@ -18,6 +15,10 @@
 #include "esl/detail/strings_split.h"
 
 namespace esl::strings {
+
+//
+// match
+//
 
 constexpr bool equals_ignore_ascii_case(std::string_view s1, std::string_view s2) noexcept {
     return s1.size() == s2.size() && detail::compare_n_ignore_ascii_case(s1, s2, s1.size()) == 0;
@@ -43,6 +44,10 @@ constexpr bool ends_with_ignore_ascii_case(std::string_view str,
     return str.size() >= suffix.size() &&
            equals_ignore_ascii_case(str.substr(str.size() - suffix.size()), suffix);
 }
+
+//
+// join
+//
 
 template<typename Iterator>
 void join(Iterator first, Iterator last, std::string_view sep, std::string& out) {
@@ -128,6 +133,10 @@ std::string join(std::initializer_list<T> il, std::string_view sep, Appender&& a
     join(il, sep, out, std::forward<Appender>(ap));
     return out;
 }
+
+//
+// split
+//
 
 // The behavior is undefined if given `delim` is empty.
 class by_string {
@@ -231,40 +240,6 @@ struct skip_empty {
     }
 };
 
-namespace detail {
-
-template<typename Delimiter>
-struct select_delimiter {
-    using type = Delimiter;
-};
-
-template<>
-struct select_delimiter<char> {
-    using type = by_char;
-};
-
-template<>
-struct select_delimiter<char*> {
-    using type = by_string;
-};
-
-template<>
-struct select_delimiter<const char*> {
-    using type = by_string;
-};
-
-template<>
-struct select_delimiter<std::string_view> {
-    using type = by_string;
-};
-
-template<>
-struct select_delimiter<std::string> {
-    using type = by_string;
-};
-
-} // namespace detail
-
 template<typename Delimiter>
 auto split(std::string_view text, Delimiter delim) {
     using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
@@ -301,6 +276,10 @@ auto split(StringType&& text, Delimiter delim, Predicate predicate) {
     return detail::split_view<std::string, delimiter_t, Predicate>(
             static_cast<std::string&&>(text), delimiter_t(delim), predicate);
 }
+
+//
+// trim
+//
 
 [[nodiscard]] constexpr std::string_view trim_prefix(std::string_view str,
                                                      std::string_view prefix) noexcept {
@@ -368,5 +347,3 @@ inline void trim_inplace(std::string& str, std::string_view chars) {
 }
 
 } // namespace esl::strings
-
-#endif // ESL_STRINGS_H_

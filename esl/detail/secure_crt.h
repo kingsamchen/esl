@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_DETAIL_SECURE_CRT_H_
-#define ESL_DETAIL_SECURE_CRT_H_
-
 #include <cstdio>
 #include <string>
 
@@ -26,5 +23,3 @@ inline unique_file fopen(const std::string& filepath, const char* mode) {
 }
 
 } // namespace esl::detail
-
-#endif // ESL_DETAIL_SECURE_CRT_H_

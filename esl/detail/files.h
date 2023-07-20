@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_DETAIL_FILES_H_
-#define ESL_DETAIL_FILES_H_
-
 #include <cstdint>
 #include <cstdio>
 
@@ -43,5 +40,3 @@ inline std::size_t get_file_size(std::FILE* fp) {
 }
 
 } // namespace esl::detail
-
-#endif // ESL_DETAIL_FILES_H_

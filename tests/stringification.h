@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_TESTS_STRINGIFICATION_H_
-#define ESL_TESTS_STRINGIFICATION_H_
-
 #include <deque>
 #include <list>
 #include <map>
@@ -15,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+#include "doctest/doctest.h"
 
 namespace doctest {
 
@@ -124,5 +123,3 @@ struct StringMaker<std::unordered_map<K, V>> {
 };
 
 } // namespace doctest
-
-#endif // ESL_TESTS_STRINGIFICATION_H_

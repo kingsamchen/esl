@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_UNIQUE_HANDLE_H_
-#define ESL_UNIQUE_HANDLE_H_
-
 #include <cstdio>
 #include <memory>
 
@@ -143,5 +140,3 @@ inline unique_file wrap_unique_file(std::FILE* fp) {
 }
 
 } // namespace esl
-
-#endif // ESL_UNIQUE_HANDLE_H_

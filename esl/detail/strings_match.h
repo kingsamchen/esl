@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef ESL_DETAIL_STRINGS_MATCH_H_
-#define ESL_DETAIL_STRINGS_MATCH_H_
+#include <cassert>
+#include <string_view>
 
 namespace esl::strings::detail {
 
@@ -34,5 +34,3 @@ constexpr int compare_n_ignore_ascii_case(std::string_view s1,
 }
 
 } // namespace esl::strings::detail
-
-#endif // ESL_DETAIL_STRINGS_MATCH_H_
