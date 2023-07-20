@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_BYTESWAP_H_
-#define ESL_BYTESWAP_H_
-
 #include <cstdint>
 
 #if defined(_WIN32)
@@ -74,5 +71,3 @@ inline std::uint64_t byteswap(std::uint64_t n) noexcept {
 #endif
 
 } // namespace esl
-
-#endif // ESL_BYTESWAP_H_

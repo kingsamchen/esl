@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_DETAIL_STRINGS_JOIN_H_
-#define ESL_DETAIL_STRINGS_JOIN_H_
-
 #include <cassert>
 #include <iterator>
 #include <string>
@@ -97,5 +94,3 @@ join_impl(Iterator first, Iterator last, std::string_view sep, std::string& out)
 }
 
 } // namespace esl::strings::detail
-
-#endif // ESL_DETAIL_STRINGS_JOIN_H_

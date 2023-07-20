@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_SCOPE_GUARD_H_
-#define ESL_SCOPE_GUARD_H_
-
 #include <cstddef>
 #include <cstdio>
 #include <exception>
@@ -230,5 +227,3 @@ template<typename F>
             ::esl::detail::scope_guard_on_success{} + [&]()
 
 // NOLINTEND(bugprone-macro-parentheses)
-
-#endif // ESL_SCOPE_GUARD_H_

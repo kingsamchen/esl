@@ -4,9 +4,6 @@
 
 #pragma once
 
-#ifndef ESL_FILE_UTIL_H_
-#define ESL_FILE_UTIL_H_
-
 #include <cassert>
 #include <cerrno>
 #include <cstdint>
@@ -107,5 +104,3 @@ inline void write_to_file(const std::string& path, std::string_view content) {
 }
 
 } // namespace esl
-
-#endif // ESL_FILE_UTIL_H_
