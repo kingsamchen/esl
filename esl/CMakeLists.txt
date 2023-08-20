@@ -24,7 +24,9 @@ target_sources(esl
 )
 
 target_include_directories(esl
-  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/../
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_compile_definitions(esl

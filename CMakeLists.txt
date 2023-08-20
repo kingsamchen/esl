@@ -26,6 +26,7 @@ set(ESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(ESL_CMAKE_DIR ${ESL_DIR}/cmake)
 
 include(CTest)
+include(GNUInstallDirs)
 include(${ESL_CMAKE_DIR}/CPM.cmake)
 
 message(STATUS "esl GENERATOR = " ${CMAKE_GENERATOR})
@@ -67,3 +68,5 @@ add_subdirectory(esl)
 if(ESL_NOT_SUBPROJECT AND BUILD_TESTING)
   add_subdirectory(tests)
 endif()
+
+include(${ESL_CMAKE_DIR}/install.cmake)
