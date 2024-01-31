@@ -2,7 +2,10 @@
 // This file is subject to the terms of license that can be found
 // in the LICENSE file.
 
-#include <tuple>
+#include <cerrno>
+#include <cstdio>
+#include <memory>
+#include <string>
 #include <type_traits>
 
 #if !defined(_WIN32)

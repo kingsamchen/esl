@@ -3,7 +3,11 @@
 // in the LICENSE file.
 
 #include <functional>
+#include <iostream>
 #include <stdexcept>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "doctest/doctest.h"
@@ -44,7 +48,11 @@ struct throw_on_copy_invoker {
           throw_after_copied(allow_copied_count) {}
 
     // Force scope_guard copying this invoker.
-    throw_on_copy_invoker(throw_on_copy_invoker&& other) noexcept(false) = default;
+    // Use `= default` will fail with GCC
+    throw_on_copy_invoker(throw_on_copy_invoker&& other) noexcept(false)
+        : invoked_counter(other.invoked_counter),
+          throw_after_copied(other.throw_after_copied),
+          copied_counter(other.copied_counter) {}
 
     throw_on_copy_invoker(const throw_on_copy_invoker& other)
         : invoked_counter(other.invoked_counter),
@@ -242,6 +250,7 @@ TEST_CASE("handy macros") {
                 CHECK_EQ(i, 0);
                 throw std::runtime_error("vala");
             } catch (...) {
+                std::cerr << __FILE__ << ":" << __LINE__ << " catched for scope exit";
             }
             CHECK_EQ(i, 1);
         }
@@ -266,6 +275,7 @@ TEST_CASE("handy macros") {
                 };
                 throw std::runtime_error("vala");
             } catch (...) {
+                std::cerr << __FILE__ << ":" << __LINE__ << " catched for scope faile";
             }
             CHECK(guard_executed);
         }
@@ -290,6 +300,7 @@ TEST_CASE("handy macros") {
                 };
                 throw std::runtime_error("omg");
             } catch (...) {
+                std::cerr << __FILE__ << ":" << __LINE__ << " catched for scope sucess";
             }
             CHECK_FALSE(guard_executed);
         }

@@ -7,6 +7,7 @@
 
 #include "doctest/doctest.h"
 
+#include "esl/detail/strings_match.h"
 #include "esl/strings.h"
 
 namespace strings = esl::strings;
