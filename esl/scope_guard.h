@@ -98,7 +98,7 @@ public:
 
 private:
     template<typename F>
-    scope_guard(F&& fn, scope_guard_base&& failsafe)
+    scope_guard(F&& fn, scope_guard_base&& failsafe) // NOLINT(*-rvalue-reference-param-not-moved)
         : scope_guard_base(),
           guard_fn_(std::forward<F>(fn)) {
         failsafe.dismiss();

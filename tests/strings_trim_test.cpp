@@ -8,7 +8,6 @@
 #include "doctest/doctest.h"
 
 #include "esl/strings.h"
-#include "tests/stringification.h"
 
 namespace strings = esl::strings;
 

@@ -2,8 +2,12 @@
 // This file is subject to the terms of license that can be found
 // in the LICENSE file.
 
+#include <array>
+#include <cstddef>
 #include <deque>
 #include <forward_list>
+#include <initializer_list>
+#include <iterator>
 #include <list>
 #include <map>
 #include <queue>
@@ -11,12 +15,15 @@
 #include <stack>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "doctest/doctest.h"
 
+#include "esl/detail/strings_split.h"
 #include "esl/strings.h"
 #include "tests/stringification.h"
 

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <iterator>
 #include <string>
 #include <string_view>
@@ -37,10 +38,11 @@ template<typename Iterator, typename Appender>
 void join_append(Iterator first, Iterator last, std::string_view sep, std::string& out,
                  Appender&& appender) {
     assert(first != last);
-    appender(*first, out);
+    auto&& ap = std::forward<Appender>(appender);
+    ap(*first, out);
     for (auto it = ++first; it != last; ++it) {
         out.append(sep);
-        appender(*it, out);
+        ap(*it, out);
     }
 }
 

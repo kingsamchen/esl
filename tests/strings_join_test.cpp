@@ -2,18 +2,22 @@
 // This file is subject to the terms of license that can be found
 // in the LICENSE file.
 
+#include <cstddef>
 #include <deque>
 #include <forward_list>
 #include <iterator>
 #include <list>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "doctest/doctest.h"
 
+#include "esl/detail/strings_join.h"
 #include "esl/strings.h"
 
 namespace strings = esl::strings;
