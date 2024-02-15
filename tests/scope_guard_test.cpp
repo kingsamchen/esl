@@ -58,7 +58,6 @@ struct throw_on_copy_invoker {
         : invoked_counter(other.invoked_counter),
           throw_after_copied(other.throw_after_copied),
           copied_counter(other.copied_counter + 1) {
-
         if (copied_counter > throw_after_copied) {
             throw std::runtime_error("intended throw");
         }
