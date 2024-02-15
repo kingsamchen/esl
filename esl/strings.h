@@ -340,7 +340,6 @@ inline void trim_right_inplace(std::string& str, std::string_view chars) {
 
 [[nodiscard]] constexpr std::string_view trim(std::string_view str,
                                               std::string_view chars) noexcept {
-
     return trim_right(trim_left(str, chars), chars);
 }
 
