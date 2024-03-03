@@ -125,7 +125,6 @@ private:
         } while (!(*predicate_)(curr_));
     }
 
-private:
     std::size_t pos_;
     scan_state state_;
     std::string_view text_;
@@ -235,37 +234,37 @@ public:
 
     split_view& operator=(split_view&&) noexcept = default;
 
-    iterator begin() const {
+    [[nodiscard]] iterator begin() const {
         return iterator(text_, 0, delimiter_, predicate_);
     }
 
-    const_iterator cbegin() const {
+    [[nodiscard]] const_iterator cbegin() const {
         return begin();
     }
 
-    iterator end() const {
+    [[nodiscard]] iterator end() const {
         return iterator(text_);
     }
 
-    const_iterator cend() const {
+    [[nodiscard]] const_iterator cend() const {
         return end();
     }
 
-    std::string_view text() const noexcept {
+    [[nodiscard]] std::string_view text() const noexcept {
         return text_;
     }
 
-    const Delimiter& delimiter() const noexcept {
+    [[nodiscard]] const Delimiter& delimiter() const noexcept {
         return delimiter_;
     }
 
-    const Predicate& predicate() const noexcept {
+    [[nodiscard]] const Predicate& predicate() const noexcept {
         return predicate_;
     }
 
     template<typename Container,
              std::enable_if_t<can_construct_container_v<Container>, int> = 0>
-    Container to() const {
+    [[nodiscard]] Container to() const {
         return construct_container<Container, typename Container::value_type>{}(*this);
     }
 

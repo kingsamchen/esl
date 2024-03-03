@@ -27,16 +27,11 @@ Checks: >
   -misc-no-recursion,
   -modernize-avoid-c-arrays,
   -modernize-return-braced-init-list,
-  -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
-  -performance-no-int-to-ptr,
   -performance-noexcept-destructor,
   -performance-noexcept-move-constructor,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
-  -readability-named-parameter,
-  -readability-qualified-auto,
-  -readability-redundant-access-specifiers
 
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(esl|tests)\/.*\.h$'

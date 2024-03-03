@@ -151,12 +151,12 @@ public:
     explicit by_string(StringViewLike delim)
         : by_string(std::string{delim}) {}
 
-    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+    [[nodiscard]] std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         return delimiter_.size() == 1 ? text.find(delimiter_[0], pos)
                                       : text.find(delimiter_, pos);
     }
 
-    std::size_t size() const noexcept {
+    [[nodiscard]] std::size_t size() const noexcept {
         return delimiter_.size();
     }
 
@@ -169,7 +169,7 @@ public:
     explicit by_char(char ch) noexcept
         : ch_(ch) {}
 
-    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+    [[nodiscard]] std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         return text.find(ch_, pos);
     }
 
@@ -194,7 +194,7 @@ public:
     explicit by_any_char(StringViewLike delim)
         : by_any_char(std::string{delim}) {}
 
-    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+    [[nodiscard]] std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         return delimiters_.size() == 1 ? text.find_first_of(delimiters_[0], pos)
                                        : text.find_first_of(delimiters_, pos);
     }
@@ -215,7 +215,7 @@ public:
         assert(len > 0);
     }
 
-    std::size_t find(std::string_view text, std::size_t pos) const noexcept {
+    [[nodiscard]] std::size_t find(std::string_view text, std::size_t pos) const noexcept {
         const auto next_pos = pos + limit_len_;
         return next_pos < text.size() ? next_pos : std::string_view::npos;
     }
@@ -229,7 +229,7 @@ private:
 };
 
 struct allow_any {
-    bool operator()(std::string_view) const noexcept {
+    bool operator()(std::string_view /*unused*/) const noexcept {
         return true;
     }
 };

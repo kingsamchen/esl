@@ -9,7 +9,7 @@ function run_clang_format_diff() {
         exit 0
     fi
 
-    fmt_diff=$(git diff --no-ext -U0 --no-color --relative --cached | clang-format-diff.py -p1)
+    fmt_diff=$(git diff --no-ext-diff -U0 --no-color --relative --cached | clang-format-diff.py -p1)
 
     colorize_diff='
         /^+/ { printf "\033[1;32m" }
