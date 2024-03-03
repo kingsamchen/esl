@@ -39,7 +39,7 @@ public:
 protected:
     scope_guard_base() noexcept = default;
 
-    bool dismissed() const noexcept {
+    [[nodiscard]] bool dismissed() const noexcept {
         return dismissed_;
     }
 
@@ -104,12 +104,13 @@ private:
         failsafe.dismiss();
     }
 
-    static scope_guard_base make_failsafe(std::true_type /* nothrow */, const void*) noexcept {
+    static scope_guard_base make_failsafe(std::true_type /*nothrow*/,
+                                          const void* /*unused*/) noexcept {
         return make_empty_scope_guard();
     }
 
     template<typename F>
-    static auto make_failsafe(std::false_type /* nothrow */, F* pfn) noexcept {
+    static auto make_failsafe(std::false_type /*nothrow*/, F* pfn) noexcept {
         return scope_guard<decltype(std::ref(*pfn)), InvokeNoexcept>(std::ref(*pfn));
     }
 
@@ -125,7 +126,6 @@ private:
         }
     }
 
-private:
     Fn guard_fn_;
 };
 
@@ -135,7 +135,7 @@ using scope_guard_decay = scope_guard<std::decay_t<F>, true>;
 struct scope_guard_on_exit {};
 
 template<typename F>
-scope_guard_decay<F> operator+(scope_guard_on_exit, F&& fn) noexcept(
+scope_guard_decay<F> operator+(scope_guard_on_exit /*unused*/, F&& fn) noexcept(
         noexcept(scope_guard_decay<F>(std::forward<F>(fn)))) {
     return scope_guard_decay<F>(std::forward<F>(fn));
 }
@@ -186,7 +186,8 @@ using scope_guard_for_new_exception_decay =
 struct scope_guard_on_fail {};
 
 template<typename F>
-scope_guard_for_new_exception_decay<F, true> operator+(scope_guard_on_fail, F&& fn) noexcept(
+scope_guard_for_new_exception_decay<F, true>
+operator+(scope_guard_on_fail /*unused*/, F&& fn) noexcept(
         noexcept(scope_guard_for_new_exception_decay<F, true>(std::forward<F>(fn)))) {
     return scope_guard_for_new_exception_decay<F, true>(std::forward<F>(fn));
 }
@@ -194,7 +195,8 @@ scope_guard_for_new_exception_decay<F, true> operator+(scope_guard_on_fail, F&& 
 struct scope_guard_on_success {};
 
 template<typename F>
-scope_guard_for_new_exception_decay<F, false> operator+(scope_guard_on_success, F&& fn) {
+scope_guard_for_new_exception_decay<F, false>
+operator+(scope_guard_on_success /*unused*/, F&& fn) {
     return scope_guard_for_new_exception_decay<F, false>(std::forward<F>(fn));
 }
 

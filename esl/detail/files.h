@@ -23,7 +23,8 @@ namespace esl::detail {
 inline std::size_t get_file_size(std::FILE* fp) {
 #if defined(_WIN32)
     BY_HANDLE_FILE_INFORMATION file_info{};
-    auto fh = reinterpret_cast<HANDLE>( // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
+    auto* fh = reinterpret_cast<HANDLE>(
             ::_get_osfhandle(::_fileno(fp)));
     if (!::GetFileInformationByHandle(fh, &file_info)) {
         return 0;

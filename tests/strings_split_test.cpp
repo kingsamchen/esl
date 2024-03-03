@@ -33,18 +33,19 @@ namespace strings = esl::strings;
 namespace {
 
 struct dummy_delimiter {
-    std::size_t size() const noexcept {
+    [[nodiscard]] std::size_t size() const noexcept {
         (void)this;
         return 0;
     }
 
-    std::size_t find(std::string_view, std::size_t) const noexcept {
+    [[nodiscard]] std::size_t find(std::string_view /*unused*/,
+                                   std::size_t /*unused*/) const noexcept {
         (void)this;
         return std::string_view::npos;
     }
 };
 
-bool allow_any(std::string_view) {
+bool allow_any(std::string_view /*unused*/) {
     return true;
 }
 

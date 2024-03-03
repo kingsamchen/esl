@@ -26,7 +26,7 @@ struct fake_handle_traits {
         return handle != null_handle;
     }
 
-    static void close(handle_type) noexcept {
+    static void close(handle_type /*unused*/) noexcept {
         // do nothing
     }
 
@@ -141,7 +141,7 @@ struct close_test_traits : fake_handle_traits {
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     inline static bool close_invoked{false};
 
-    static void close(handle_type) noexcept {
+    static void close(handle_type /*unused*/) noexcept {
         close_invoked = true;
     }
 };
@@ -263,7 +263,7 @@ TEST_CASE("unique_file as FILE* wrapper") {
     SUBCASE("simple use case") {
         unique_file file;
         REQUIRE(file == nullptr);
-        auto raw_fp = safe_fopen(tests::new_test_filepath().c_str(), "w");
+        auto* raw_fp = safe_fopen(tests::new_test_filepath().c_str(), "w");
         INFO("create file for writing failed; errno=", errno);
         REQUIRE(raw_fp != nullptr);
         file = esl::wrap_unique_file(raw_fp);
