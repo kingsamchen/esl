@@ -24,7 +24,7 @@ public:
 
     handle_ptr(std::nullptr_t) noexcept {} // NOLINT(google-explicit-constructor)
 
-    handle_ptr(handle_type handle) noexcept // NOLINT(google-explicit-constructor)
+    explicit handle_ptr(handle_type handle) noexcept
         : handle_(handle) {}
 
     explicit operator bool() const noexcept {
@@ -58,6 +58,10 @@ struct handle_ptr_deleter {
 
 #if defined(_WIN32)
 
+//
+// Windows HANDLE
+//
+
 struct win_handle_traits {
     using handle_type = HANDLE;
 
@@ -66,18 +70,22 @@ struct win_handle_traits {
     }
 
     static void close(handle_type handle) noexcept {
-        ::CloseHandle(handle);
+        (void)::CloseHandle(handle);
     }
 
     static constexpr handle_type null_handle{nullptr};
 };
 
 using win_handle_deleter = handle_ptr_deleter<win_handle_traits>;
-using unique_win_handle = std::unique_ptr<win_handle_traits::handle_type, win_handle_deleter>;
+using unique_win_handle = std::unique_ptr<win_handle_deleter::pointer, win_handle_deleter>;
 
 inline unique_win_handle wrap_unique_win_handle(HANDLE raw_handle) {
-    return unique_win_handle(raw_handle);
+    return unique_win_handle(unique_win_handle::pointer{raw_handle});
 }
+
+//
+// Windows HANDLE for file
+//
 
 struct winfile_handle_traits {
     using handle_type = HANDLE;
@@ -87,7 +95,7 @@ struct winfile_handle_traits {
     }
 
     static void close(handle_type handle) noexcept {
-        ::CloseHandle(handle);
+        (void)::CloseHandle(handle);
     }
 
     // TODO(KC): use std::bit_cast when upgrading to C++20
@@ -96,13 +104,17 @@ struct winfile_handle_traits {
 
 using winfile_handle_deleter = handle_ptr_deleter<winfile_handle_traits>;
 using unique_winfile_handle =
-        std::unique_ptr<winfile_handle_traits::handle_type, winfile_handle_deleter>;
+        std::unique_ptr<winfile_handle_deleter::pointer, winfile_handle_deleter>;
 
 inline unique_winfile_handle wrap_unique_winfile_handle(HANDLE raw_file_handle) {
-    return unique_winfile_handle(raw_file_handle);
+    return unique_winfile_handle(unique_winfile_handle::pointer{raw_file_handle});
 }
 
 #else
+
+//
+// fd
+//
 
 struct fd_traits {
     using handle_type = int;
@@ -112,24 +124,28 @@ struct fd_traits {
     }
 
     static void close(handle_type handle) noexcept {
-        ::close(handle);
+        (void)::close(handle);
     }
 
     static constexpr handle_type null_handle{-1};
 };
 
 using fd_deleter = handle_ptr_deleter<fd_traits>;
-using unique_fd = std::unique_ptr<fd_traits::handle_type, fd_deleter>;
+using unique_fd = std::unique_ptr<fd_deleter::pointer, fd_deleter>;
 
 inline unique_fd wrap_unique_fd(int raw_fd) {
-    return unique_fd(raw_fd);
+    return unique_fd(unique_fd::pointer{raw_fd});
 }
 
 #endif
 
+//
+// FILE
+//
+
 struct file_deleter {
     void operator()(std::FILE* fp) const noexcept {
-        std::fclose(fp);
+        (void)std::fclose(fp);
     }
 };
 

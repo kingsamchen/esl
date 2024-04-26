@@ -147,7 +147,7 @@ struct close_test_traits : fake_handle_traits {
 };
 
 TEST_CASE("Won't close the handle ptr if null") {
-    using ptr_type = std::unique_ptr<close_test_traits::handle_type,
+    using ptr_type = std::unique_ptr<esl::handle_ptr<close_test_traits>,
                                      esl::handle_ptr_deleter<close_test_traits>>;
     // A null pointer won't invoke Traits::close() when reset or destruct.
     // Traits::close() itself doesn't need to check nullable.
@@ -160,10 +160,24 @@ TEST_CASE("Won't close the handle ptr if null") {
 
     // Traits::close() will be invokved.
     {
-        const ptr_type p{1};
+        const ptr_type p{ptr_type::pointer{1}};
         REQUIRE(p != nullptr);
     }
     CHECK_EQ(close_test_traits::close_invoked, true);
+}
+
+using fake_handle_deleter = esl::handle_ptr_deleter<fake_handle_traits>;
+using unique_fake_handle = std::unique_ptr<fake_handle_deleter::pointer, fake_handle_deleter>;
+
+TEST_CASE("common use cases with unique handle") {
+    static_assert(std::is_same_v<unique_fake_handle::pointer, fake_handle_deleter::pointer>);
+
+    // Direclty construct without using wrap function.
+    const unique_fake_handle handle{unique_fake_handle::pointer{1}};
+
+    // Implicit convert internal pointer to underlying handle type.
+    bool ok = handle.get() == 1;
+    CHECK(ok);
 }
 
 #if defined(_WIN32)
