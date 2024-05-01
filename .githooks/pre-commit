@@ -36,7 +36,7 @@ function run_line_length_check() {
 
     changed_files=$(git diff --cached --name-only | grep -iE '\.(cpp|h)$')
     if [ -n "${changed_files}" ]; then
-        cpplint --quiet --filter=-,+whitespace/line_length --linelength=100 ${changed_files} ||
+        cpplint --quiet ${changed_files} ||
         if [ "$?" ]; then
             exit 1
         fi
