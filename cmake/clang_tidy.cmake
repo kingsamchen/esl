@@ -22,6 +22,7 @@ function(esl_apply_clang_tidy TARGET)
     set(CLANG_TIDY_COMMAND
         "${CLANG_TIDY_EXE}"
         "--quiet"
+        "--extra-arg-before=--driver-mode=c++"
         "-p" "'${CMAKE_BINARY_DIR}'"
     )
     set_target_properties(${TARGET} PROPERTIES

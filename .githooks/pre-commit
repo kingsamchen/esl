@@ -25,8 +25,8 @@ function run_clang_format_diff() {
     echo "clang-format-diff passed"
 }
 
-function run_line_length_check() {
-    echo "Running line-length check..."
+function run_cpplint_check() {
+    echo "Running cpplint check..."
     command -v "cpplint" > /dev/null 2>&1 ||
     if [ "$?" ]; then
         echo "cpplint not found, skip!"
@@ -42,8 +42,8 @@ function run_line_length_check() {
         fi
     fi
 
-    echo "Line-length check passed"
+    echo "cpplint check passed"
 }
 
 run_clang_format_diff && \
-run_line_length_check
+run_cpplint_check

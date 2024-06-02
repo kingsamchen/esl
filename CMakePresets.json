@@ -10,10 +10,10 @@
             "name": "linux-release",
             "displayName": "Linux Release",
             "description": "Release build on Linux",
-            "generator": "Ninja Multi-Config",
+            "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
-                "CMAKE_CONFIGURATION_TYPES": "Release",
+                "CMAKE_BUILD_TYPE": "Release",
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
                 "ESL_USE_SANITIZER": "ON",
                 "ESL_ENABLE_CLANG_TIDY": "ON"
@@ -25,7 +25,7 @@
             "displayName": "Linux Dev",
             "description": "Dev build on Linux",
             "cacheVariables": {
-                "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+                "CMAKE_BUILD_TYPE": "Debug",
                 "ESL_ENABLE_CLANG_TIDY": "OFF"
             }
         },
