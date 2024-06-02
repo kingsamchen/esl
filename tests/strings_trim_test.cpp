@@ -19,7 +19,7 @@ TEST_SUITE_BEGIN("strings/trim");
 
 TEST_CASE("trim prefix") {
     static_assert(strings::trim_prefix("foobar"sv, "foo"sv) == "bar"sv);
-    static_assert(strings::trim_prefix("foobar"sv, "foobar"sv) == ""sv);
+    static_assert(strings::trim_prefix("foobar"sv, "foobar"sv).empty());
     static_assert(strings::trim_prefix("foobar"sv, "bar"sv) == "foobar"sv);
     static_assert(strings::trim_prefix("foobar"sv, ""sv) == "foobar"sv);
 }
@@ -44,7 +44,7 @@ TEST_CASE("trim prefix in-place") {
 
 TEST_CASE("trim suffix") {
     static_assert(strings::trim_suffix("foobar"sv, "bar"sv) == "foo"sv);
-    static_assert(strings::trim_suffix("foobar"sv, "foobar"sv) == ""sv);
+    static_assert(strings::trim_suffix("foobar"sv, "foobar"sv).empty());
     static_assert(strings::trim_suffix("foobar"sv, "foo"sv) == "foobar"sv);
     static_assert(strings::trim_suffix("foobar"sv, ""sv) == "foobar"sv);
 }
@@ -69,9 +69,9 @@ TEST_CASE("trim suffix in-place") {
 
 TEST_CASE("trim left") {
     static_assert(strings::trim_left("\n\t\rfoobar\r\t\n"sv, "\t\r\n\v"sv) == "foobar\r\t\n"sv);
-    static_assert(strings::trim_left("\n\t\r\r\t\n"sv, "\t\r\n\v"sv) == ""sv);
+    static_assert(strings::trim_left("\n\t\r\r\t\n"sv, "\t\r\n\v"sv).empty());
     static_assert(strings::trim_left("foobar\r\n"sv, "\t\r\n\v"sv) == "foobar\r\n"sv);
-    static_assert(strings::trim_left(""sv, "\t\r\n\v"sv) == ""sv);
+    static_assert(strings::trim_left(""sv, "\t\r\n\v"sv).empty());
 }
 
 TEST_CASE("trim left inplace") {
@@ -102,9 +102,9 @@ TEST_CASE("trim left inplace") {
 
 TEST_CASE("trim right") {
     static_assert(strings::trim_right("\n\t\rfoobar\r\t\n"sv, "\t\r\n\v"sv) == "\n\t\rfoobar"sv);
-    static_assert(strings::trim_right("\n\t\r\r\t\n"sv, "\t\r\n\v"sv) == ""sv);
+    static_assert(strings::trim_right("\n\t\r\r\t\n"sv, "\t\r\n\v"sv).empty());
     static_assert(strings::trim_right("\n\t\rfoobar"sv, "\t\r\n\v"sv) == "\n\t\rfoobar"sv);
-    static_assert(strings::trim_right(""sv, "\t\r\n\v"sv) == ""sv);
+    static_assert(strings::trim_right(""sv, "\t\r\n\v"sv).empty());
 }
 
 TEST_CASE("trim right inplace") {
@@ -135,9 +135,9 @@ TEST_CASE("trim right inplace") {
 
 TEST_CASE("trim both sides") {
     static_assert(strings::trim("\n\t\rfoobar\r\t\n"sv, "\t\r\n\v"sv) == "foobar"sv);
-    static_assert(strings::trim("\n\t\r\r\t\n"sv, "\t\r\n\v"sv) == ""sv);
+    static_assert(strings::trim("\n\t\r\r\t\n"sv, "\t\r\n\v"sv).empty());
     static_assert(strings::trim("foobar"sv, "\t\r\n\v"sv) == "foobar"sv);
-    static_assert(strings::trim(""sv, "\t\r\n\v"sv) == ""sv);
+    static_assert(strings::trim(""sv, "\t\r\n\v"sv).empty());
 }
 
 TEST_CASE("trim both sides inplace") {

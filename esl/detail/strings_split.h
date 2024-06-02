@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <optional>
 #include <stdexcept>
@@ -24,7 +25,7 @@ namespace detail {
 
 template<typename Delimiter, typename Predicate>
 class split_iterator {
-    enum class scan_state {
+    enum class scan_state : std::uint8_t {
         end = 0,
         last,
         scanning

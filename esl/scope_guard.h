@@ -67,8 +67,11 @@ public:
                       make_failsafe(std::is_nothrow_copy_constructible<Fn>{}, &fn)) {}
 
     explicit scope_guard(Fn&& fn) noexcept(std::is_nothrow_move_constructible_v<Fn>)
-        : scope_guard(std::move_if_noexcept(fn),
-                      make_failsafe(std::is_nothrow_move_constructible<Fn>{}, &fn)) {}
+        : scope_guard(
+                  std::move_if_noexcept(fn),
+                  make_failsafe(std::is_nothrow_move_constructible<Fn>{},
+                                &fn)) { // NOLINT(bugprone-multi-level-implicit-pointer-conversion)
+    }
 
     ~scope_guard() noexcept(InvokeNoexcept) { // NOLINT(bugprone-exception-escape)
         if (!dismissed()) {
