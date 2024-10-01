@@ -244,14 +244,14 @@ template<typename Delimiter>
 auto split(std::string_view text, Delimiter delim) {
     using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
     return detail::split_view<std::string_view, delimiter_t, allow_any>(
-            text, delimiter_t(delim), allow_any{});
+            text, delimiter_t(std::move(delim)), allow_any{});
 }
 
 template<typename Delimiter, typename Predicate>
 auto split(std::string_view text, Delimiter delim, Predicate predicate) {
     using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
     return detail::split_view<std::string_view, delimiter_t, Predicate>(
-            text, delimiter_t(delim), predicate);
+            text, delimiter_t(std::move(delim)), predicate);
 }
 
 // Following two functions will be selected if and only if the `text` is a rvalue
@@ -265,7 +265,7 @@ auto split(StringType&& text, // NOLINT(cppcoreguidelines-missing-std-forward)
            Delimiter delim) {
     using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
     return detail::split_view<std::string, delimiter_t, allow_any>(
-            static_cast<std::string&&>(text), delimiter_t(delim), allow_any{});
+            static_cast<std::string&&>(text), delimiter_t(std::move(delim)), allow_any{});
 }
 
 template<typename Delimiter,
@@ -277,7 +277,7 @@ auto split(StringType&& text, // NOLINT(cppcoreguidelines-missing-std-forward)
            Predicate predicate) {
     using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
     return detail::split_view<std::string, delimiter_t, Predicate>(
-            static_cast<std::string&&>(text), delimiter_t(delim), predicate);
+            static_cast<std::string&&>(text), delimiter_t(std::move(delim)), predicate);
 }
 
 //
