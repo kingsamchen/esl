@@ -1,0 +1,30 @@
+name: Build and test on Windows
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+      - '.githooks/**'
+
+jobs:
+  build-and-test:
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      matrix:
+        # windows-2019 has MSVC 2019 installed;
+        # windows-2022 has MSVC 2022 installed:
+        # https://github.com/actions/virtual-environments.
+        # Only x64 is supported.
+        os: [windows-2019, windows-2022]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test
+        run: |
+          cmake --preset windows-release -DESL_ENABLE_CLANG_TIDY=OFF
+          cmake --build --preset windows-release
+          ctest --preset windows-release
