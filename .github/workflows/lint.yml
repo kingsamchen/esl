@@ -1,0 +1,49 @@
+name: Lint
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+      - '.githooks/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add repository for clang-format and clang-tidy
+        run: |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          sudo add-apt-repository -y deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main
+
+      - name: Add Ubuntu mirrors
+        run: |
+          # Github Actions caching proxy is at times unreliable
+          # see https://github.com/actions/runner-images/issues/7048
+          printf 'http://azure.archive.ubuntu.com/ubuntu\tpriority:1\n' | sudo tee /etc/apt/mirrors.txt
+          curl http://mirrors.ubuntu.com/mirrors.txt | sudo tee --append /etc/apt/mirrors.txt
+          sudo sed -i 's~http://azure.archive.ubuntu.com/ubuntu/~mirror+file:/etc/apt/mirrors.txt~' /etc/apt/sources.list
+
+      - name: Install required tools
+        run: |
+          sudo apt update
+          sudo apt install clang-format-19 clang-tidy-19 ninja-build
+          sudo pip3 install cpplint
+
+      - name: Run cpplint
+        run: |
+          cpplint --quiet --recursive esl tests
+
+      - name: Run clang-format
+        run: |
+          find esl tests -name '*.h' -o -name '*.cpp' |\
+            xargs clang-format-19 --dry-run -Werror
+
+      - name: Run clang-tidy
+        run: |
+          cmake --preset linux-release -DESL_USE_SANITIZER=OFF
+          run-clang-tidy-19 tests -p out/linux-release

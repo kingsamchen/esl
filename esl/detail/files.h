@@ -34,7 +34,7 @@ inline std::size_t get_file_size(std::FILE* fp) {
     file_size.HighPart = file_info.nFileSizeHigh;
     return file_size.QuadPart > 0 ? file_size.QuadPart : 0;
 #else
-    struct stat64 file_stat {};
+    struct stat64 file_stat{};
     const int ret = ::fstat64(::fileno(fp), &file_stat);
     return ret == 0 ? static_cast<std::size_t>(file_stat.st_size) : 0;
 #endif
