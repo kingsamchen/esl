@@ -62,6 +62,7 @@ else()
 endif()
 
 include(${ESL_CMAKE_DIR}/clang_tidy.cmake)
+include(${ESL_CMAKE_DIR}/sanitizer.cmake)
 
 add_subdirectory(esl)
 

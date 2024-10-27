@@ -15,7 +15,7 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
-                "ESL_USE_SANITIZER": "ON",
+                "ESL_USE_SANITIZER": "ASAN;UBSAN",
                 "ESL_ENABLE_CLANG_TIDY": "ON"
             }
         },
@@ -36,6 +36,7 @@
             "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
+                "ESL_USE_SANITIZER": "",
                 "ESL_ENABLE_CLANG_TIDY": "ON",
                 "ESL_USE_MSVC_STATIC_ANALYSIS": "ON"
             },
