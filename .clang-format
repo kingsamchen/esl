@@ -37,4 +37,8 @@ RequiresClausePosition: OwnLine
 ShortNamespaceLines: 0
 SpaceAfterTemplateKeyword: false
 SpaceBeforeParens: ControlStatementsExceptControlMacros
+
+---
+Language: Json
+IndentWidth: 4
 ...
