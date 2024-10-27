@@ -1,6 +1,4 @@
 
-option(ESL_USE_SANITIZER "If enabled, activate address_sanitizer and ub_sanitizer" OFF)
-
 if(ESL_NOT_SUBPROJECT)
   message(STATUS "esl compiler POSIX global conf is in active")
 
@@ -11,8 +9,6 @@ if(ESL_NOT_SUBPROJECT)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-limit-debug-info")
   endif()
 endif()
-
-message(STATUS "ESL_USE_SANITIZER = ${ESL_USE_SANITIZER}")
 
 function(esl_apply_common_compile_options TARGET)
   target_compile_definitions(${TARGET}
@@ -36,20 +32,5 @@ function(esl_apply_common_compile_options TARGET)
       -Wsign-conversion
       -Wno-unused-function
       -Wno-error=deprecated
-  )
-endfunction()
-
-function(esl_apply_sanitizer TARGET)
-  message(STATUS "Apply esl sanitizer for ${TARGET}")
-
-  target_compile_options(${TARGET}
-    PRIVATE
-      -fno-omit-frame-pointer
-      -fsanitize=address,undefined
-  )
-
-  target_link_libraries(${TARGET}
-    PRIVATE
-      -fsanitize=address,undefined
   )
 endfunction()
