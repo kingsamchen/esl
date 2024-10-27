@@ -13,6 +13,8 @@
 #include <unistd.h>
 #endif
 
+#include "esl/ignore_unused.h"
+
 namespace esl {
 
 template<typename Traits>
@@ -70,7 +72,7 @@ struct win_handle_traits {
     }
 
     static void close(handle_type handle) noexcept {
-        (void)::CloseHandle(handle);
+        ignore_unused(::CloseHandle(handle));
     }
 
     static constexpr handle_type null_handle{nullptr};
@@ -95,7 +97,7 @@ struct winfile_handle_traits {
     }
 
     static void close(handle_type handle) noexcept {
-        (void)::CloseHandle(handle);
+        ignore_unused(::CloseHandle(handle));
     }
 
     // TODO(KC): use std::bit_cast when upgrading to C++20
@@ -124,7 +126,7 @@ struct fd_traits {
     }
 
     static void close(handle_type handle) noexcept {
-        (void)::close(handle);
+        ignore_unused(::close(handle));
     }
 
     static constexpr handle_type null_handle{-1};
@@ -145,7 +147,7 @@ inline unique_fd wrap_unique_fd(int raw_fd) {
 
 struct file_deleter {
     void operator()(std::FILE* fp) const noexcept {
-        (void)std::fclose(fp);
+        ignore_unused(std::fclose(fp));
     }
 };
 

@@ -9,13 +9,17 @@
 
 #include "esl/unique_handle.h"
 
+#if defined(_WIN32)
+#include "esl/ignore_unused.h"
+#endif
+
 namespace esl::detail {
 
 inline unique_file fopen(const std::string& filepath, const char* mode) {
 #if defined(_WIN32)
     std::FILE* fp{nullptr};
     // The global errno is set on error anyway.
-    (void)::fopen_s(&fp, filepath.c_str(), mode);
+    ignore_unused(::fopen_s(&fp, filepath.c_str(), mode));
     return wrap_unique_file(fp);
 #else
     return wrap_unique_file(std::fopen(filepath.c_str(), mode));
