@@ -1,8 +1,8 @@
 
-option(ESL_ENABLE_CLANG_TIDY "Enable clang-tidy on build" OFF)
-message(STATUS "ESL_ENABLE_CLANG_TIDY = ${ESL_ENABLE_CLANG_TIDY}")
+option(ESL_RUN_CLANG_TIDY_ON_BUILD "Run clang-tidy on build" OFF)
+message(STATUS "ESL_RUN_CLANG_TIDY_ON_BUILD = ${ESL_RUN_CLANG_TIDY_ON_BUILD}")
 
-if(ESL_ENABLE_CLANG_TIDY)
+if(ESL_RUN_CLANG_TIDY_ON_BUILD)
   find_program(CLANG_TIDY_EXE
                NAMES clang-tidy
                DOC "Path to clang-tidy executable"
@@ -10,8 +10,8 @@ if(ESL_ENABLE_CLANG_TIDY)
   message(STATUS "Found clang-tidy = ${CLANG_TIDY_EXE}")
 endif()
 
-function(esl_apply_clang_tidy TARGET)
-  message(STATUS "Apply esl clang-tidy for ${TARGET}")
+function(esl_apply_clang_tidy_on_build TARGET)
+  message(STATUS "Apply esl clang-tidy on build for ${TARGET}")
 
   if(MSVC AND CMAKE_GENERATOR MATCHES "Visual Studio")
     set_target_properties(${TARGET} PROPERTIES

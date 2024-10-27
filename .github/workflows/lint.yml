@@ -45,5 +45,5 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          cmake --preset linux-release -DESL_USE_SANITIZER=OFF
+          cmake --preset linux-release -DESL_USE_SANITIZER=""
           run-clang-tidy-19 tests -p out/linux-release

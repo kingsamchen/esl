@@ -19,12 +19,23 @@ jobs:
         # https://github.com/actions/virtual-environments.
         # Only x64 is supported.
         os: [windows-2019, windows-2022]
+        run_tidy: [OFF, ON]
+        include:
+          - os: windows-2019
+            run_tidy: OFF
+          - os: windows-2022
+            run_tidy: ON
+        exclude:
+          - os: windows-2019
+            run_tidy: ON
+          - os: windows-2022
+            run_tidy: OFF
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Build and test
         run: |
-          cmake --preset windows-release -DESL_ENABLE_CLANG_TIDY=OFF
+          cmake --preset windows-release -DESL_RUN_CLANG_TIDY_ON_BUILD=${{matrix.run_tidy}}
           cmake --build --preset windows-release
           ctest --preset windows-release

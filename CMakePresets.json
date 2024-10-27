@@ -16,7 +16,7 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
                 "ESL_USE_SANITIZER": "ASAN;UBSAN",
-                "ESL_ENABLE_CLANG_TIDY": "ON"
+                "ESL_RUN_CLANG_TIDY_ON_BUILD": "OFF"
             }
         },
         {
@@ -25,8 +25,7 @@
             "displayName": "Linux Dev",
             "description": "Dev build on Linux",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "ESL_ENABLE_CLANG_TIDY": "OFF"
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
@@ -37,8 +36,8 @@
             "cacheVariables": {
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
                 "ESL_USE_SANITIZER": "",
-                "ESL_ENABLE_CLANG_TIDY": "ON",
-                "ESL_USE_MSVC_STATIC_ANALYSIS": "ON"
+                "ESL_RUN_CLANG_TIDY_ON_BUILD": "ON",
+                "ESL_USE_MSVC_PARALLEL_BUILD": "ON"
             },
             "condition": {
                 "type": "equals",
@@ -52,8 +51,7 @@
             "displayName": "Windows Dev",
             "description": "Dev build on Windows",
             "cacheVariables": {
-                "ESL_ENABLE_CLANG_TIDY": "OFF",
-                "ESL_USE_MSVC_STATIC_ANALYSIS": "OFF"
+                "ESL_RUN_CLANG_TIDY_ON_BUILD": "OFF"
             }
         }
     ],

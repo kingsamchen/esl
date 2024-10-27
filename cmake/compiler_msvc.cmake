@@ -1,6 +1,5 @@
 
 option(ESL_USE_MSVC_PARALLEL_BUILD "If enabled, build multiple files in parallel." ON)
-option(ESL_USE_MSVC_STATIC_ANALYSIS "If enabled, run MSVC built-in static analysis and generate appropriate warnings" OFF)
 option(ESL_USE_WIN32_LEAN_AND_MEAN "If enabled, define WIN32_LEAN_AND_MEAN" ON)
 
 if(ESL_NOT_SUBPROJECT)
@@ -12,7 +11,6 @@ if(ESL_NOT_SUBPROJECT)
 endif()
 
 message(STATUS "ESL_USE_MSVC_PARALLEL_BUILD = ${ESL_USE_MSVC_PARALLEL_BUILD}")
-message(STATUS "ESL_USE_MSVC_STATIC_ANALYSIS = ${ESL_USE_MSVC_STATIC_ANALYSIS}")
 message(STATUS "ESL_USE_WIN32_LEAN_AND_MEAN = ${ESL_USE_WIN32_LEAN_AND_MEAN}")
 
 function(esl_apply_common_compile_options TARGET)
@@ -50,33 +48,4 @@ function(esl_apply_msvc_parallel_build TARGET)
     PRIVATE
       /MP
   )
-endfunction()
-
-# To explicitly suppress spcific warnings:
-# esl_apply_msvc_static_analysis(foobar
-#   WDL
-#     /wd6011
-# )
-function(esl_apply_msvc_static_analysis TARGET)
-  message(STATUS "Apply esl msvc static analysis for ${TARGET}")
-
-  set(multiValueArgs WDL)
-  cmake_parse_arguments(ARG "" "" "${multiValueArgs}" ${ARGN})
-
-  target_compile_options(${TARGET}
-    PRIVATE
-      /analyze
-
-      /wd6001 # Using uninitialized memory.
-      /wd6011 # Dereferencing potentially NULL pointer.
-
-      ${ARG_WDL}
-  )
-
-  if (CMAKE_GENERATOR MATCHES "Visual Studio")
-    set_target_properties(${TARGET} PROPERTIES
-      VS_GLOBAL_EnableMicrosoftCodeAnalysis true
-      VS_GLOBAL_RunCodeAnalysis true
-    )
-  endif()
 endfunction()
