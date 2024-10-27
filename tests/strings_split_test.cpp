@@ -24,7 +24,9 @@
 #include "doctest/doctest.h"
 
 #include "esl/detail/strings_split.h"
+#include "esl/ignore_unused.h"
 #include "esl/strings.h"
+
 #include "tests/stringification.h"
 
 namespace detail = esl::strings::detail;
@@ -34,13 +36,13 @@ namespace {
 
 struct dummy_delimiter {
     [[nodiscard]] std::size_t size() const noexcept {
-        (void)this;
+        esl::ignore_unused(this);
         return 0;
     }
 
     [[nodiscard]] std::size_t find(std::string_view /*unused*/,
                                    std::size_t /*unused*/) const noexcept {
-        (void)this;
+        esl::ignore_unused(this);
         return std::string_view::npos;
     }
 };

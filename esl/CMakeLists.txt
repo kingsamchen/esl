@@ -5,6 +5,7 @@ target_sources(esl
   PRIVATE
     byteswap.h
     file_util.h
+    ignore_unused.h
     macros.h
     scope_guard.h
     strings.h

@@ -12,6 +12,7 @@
 
 #include "doctest/doctest.h"
 
+#include "esl/ignore_unused.h"
 #include "esl/scope_guard.h"
 
 using esl::make_scope_guard;
@@ -73,7 +74,7 @@ TEST_SUITE_BEGIN("scope_guard");
 
 TEST_CASE("non-copyable, non-move-assignable but move-constructible") {
     auto fn = [] {
-        (void)0;
+        esl::ignore_unused(0);
     };
     using fn_t = decltype(fn);
     REQUIRE(std::is_copy_constructible_v<fn_t>);

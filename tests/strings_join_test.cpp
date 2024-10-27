@@ -18,6 +18,7 @@
 #include "doctest/doctest.h"
 
 #include "esl/detail/strings_join.h"
+#include "esl/ignore_unused.h"
 #include "esl/strings.h"
 
 namespace strings = esl::strings;
@@ -26,12 +27,12 @@ namespace strings_test {
 
 struct sizable_foo {
     [[nodiscard]] std::size_t size() const noexcept {
-        (void)this;
+        esl::ignore_unused(this);
         return 0;
     }
 
     [[nodiscard]] const char* data() const noexcept {
-        (void)this;
+        esl::ignore_unused(this);
         return nullptr;
     }
 };
