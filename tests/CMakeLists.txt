@@ -27,8 +27,8 @@ target_link_libraries(esl_test
 
 esl_apply_common_compile_options(esl_test)
 
-if(ESL_ENABLE_CLANG_TIDY)
-  esl_apply_clang_tidy(esl_test)
+if(ESL_RUN_CLANG_TIDY_ON_BUILD)
+  esl_apply_clang_tidy_on_build(esl_test)
 endif()
 
 if(ESL_USE_SANITIZER)
@@ -38,9 +38,6 @@ endif()
 if(MSVC)
   if(ESL_USE_MSVC_PARALLEL_BUILD)
     esl_apply_msvc_parallel_build(esl_test)
-  endif()
-  if(ESL_USE_MSVC_STATIC_ANALYSIS)
-    esl_apply_msvc_static_analysis(esl_test)
   endif()
 endif()
 

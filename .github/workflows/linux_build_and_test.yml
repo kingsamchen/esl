@@ -63,6 +63,4 @@ jobs:
         env:
           CXX: ${{matrix.cxx}}
         run: |
-          cmake --preset linux-release -DESL_ENABLE_CLANG_TIDY=OFF
-          cmake --build --preset linux-release
-          ctest --preset linux-release
+          cmake --workflow --preset linux-release
