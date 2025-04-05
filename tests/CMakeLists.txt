@@ -1,3 +1,7 @@
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "4.0")
+  set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
+endif()
+
 CPMAddPackage("gh:onqtam/doctest#v2.4.11")
 
 add_executable(esl_test)
