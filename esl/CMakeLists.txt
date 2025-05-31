@@ -1,6 +1,8 @@
 
 add_library(esl INTERFACE)
 
+add_library(esl::esl ALIAS esl)
+
 target_sources(esl
   PRIVATE
     byteswap.h
@@ -30,18 +32,7 @@ target_include_directories(esl
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-target_compile_definitions(esl
-  INTERFACE
-    $<$<BOOL:${WIN32}>:
-      _UNICODE
-      UNICODE
-      NOMINMAX
-    >
-
-    $<$<CONFIG:DEBUG>:
-      _DEBUG
-    >
-)
+esl_common_compile_configs(esl)
 
 get_target_property(esl_FILES esl SOURCES)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${esl_FILES})

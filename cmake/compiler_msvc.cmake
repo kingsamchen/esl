@@ -1,3 +1,4 @@
+include(${ESL_CMAKE_DIR}/utils.cmake)
 
 option(ESL_USE_MSVC_PARALLEL_BUILD "If enabled, build multiple files in parallel." ON)
 option(ESL_USE_WIN32_LEAN_AND_MEAN "If enabled, define WIN32_LEAN_AND_MEAN" ON)
@@ -13,39 +14,49 @@ endif()
 message(STATUS "ESL_USE_MSVC_PARALLEL_BUILD = ${ESL_USE_MSVC_PARALLEL_BUILD}")
 message(STATUS "ESL_USE_WIN32_LEAN_AND_MEAN = ${ESL_USE_WIN32_LEAN_AND_MEAN}")
 
-function(esl_apply_common_compile_options TARGET)
-  target_compile_definitions(${TARGET}
-    PUBLIC
-      _UNICODE
-      UNICODE
-      NOMINMAX
+function(esl_common_compile_configs TARGET)
+  get_target_type(${TARGET} TARGET_TYPE)
 
-      $<$<CONFIG:DEBUG>:
-        _DEBUG
-      >
+  if(NOT TARGET_TYPE STREQUAL "INTERFACE_LIBRARY")
+    target_compile_definitions(${TARGET}
+      PUBLIC
+        _UNICODE
+        UNICODE
+        NOMINMAX
 
-      $<$<BOOL:ESL_USE_WIN32_LEAN_AND_MEAN>:WIN32_LEAN_AND_MEAN>
-  )
+        $<$<CONFIG:DEBUG>:
+          _DEBUG
+        >
 
-  target_compile_options(${TARGET}
-    PRIVATE
-      /W4
-      /wd4819 # source characters not in current code page.
+        $<$<BOOL:ESL_USE_WIN32_LEAN_AND_MEAN>:WIN32_LEAN_AND_MEAN>
+    )
 
-      /Zc:inline            # Have the compiler eliminate unreferenced COMDAT functions and data before emitting the object file.
-      /Zc:rvalueCast        # Enforce the standard rules for explicit type conversion.
-      /Zc:strictStrings     # Don't allow conversion from a string literal to mutable characters.
-      /Zc:threadSafeInit    # Enable thread-safe function-local statics initialization.
+    target_compile_options(${TARGET}
+      PRIVATE
+        /W4
+        /wd4819 # source characters not in current code page.
 
-      /permissive-  # Be mean, don't allow bad non-standard stuff (C++/CLI, __declspec, etc. are all left intact).
-  )
-endfunction()
+        /Zc:inline            # Have the compiler eliminate unreferenced COMDAT functions and data before emitting the object file.
+        /Zc:rvalueCast        # Enforce the standard rules for explicit type conversion.
+        /Zc:strictStrings     # Don't allow conversion from a string literal to mutable characters.
+        /Zc:threadSafeInit    # Enable thread-safe function-local statics initialization.
 
-function(esl_apply_msvc_parallel_build TARGET)
-  message(STATUS "Apply esl msvc parallel build for ${TARGET}")
+        /permissive-  # Be mean, don't allow bad non-standard stuff (C++/CLI, __declspec, etc. are all left intact).
 
-  target_compile_options(${TARGET}
-    PRIVATE
-      /MP
-  )
+        $<$<BOOL:ESL_USE_MSVC_PARALLEL_BUILD>:/MP>
+    )
+  else()
+    target_compile_definitions(esl
+      INTERFACE
+        _UNICODE
+        UNICODE
+        NOMINMAX
+
+        $<$<CONFIG:DEBUG>:
+          _DEBUG
+        >
+
+        $<$<BOOL:ESL_USE_WIN32_LEAN_AND_MEAN>:WIN32_LEAN_AND_MEAN>
+    )
+  endif()
 endfunction()
