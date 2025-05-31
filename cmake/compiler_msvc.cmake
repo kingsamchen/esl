@@ -13,7 +13,7 @@ endif()
 message(STATUS "ESL_USE_MSVC_PARALLEL_BUILD = ${ESL_USE_MSVC_PARALLEL_BUILD}")
 message(STATUS "ESL_USE_WIN32_LEAN_AND_MEAN = ${ESL_USE_WIN32_LEAN_AND_MEAN}")
 
-function(esl_apply_common_compile_options TARGET)
+function(esl_common_compile_configs TARGET)
   target_compile_definitions(${TARGET}
     PUBLIC
       _UNICODE
@@ -38,14 +38,7 @@ function(esl_apply_common_compile_options TARGET)
       /Zc:threadSafeInit    # Enable thread-safe function-local statics initialization.
 
       /permissive-  # Be mean, don't allow bad non-standard stuff (C++/CLI, __declspec, etc. are all left intact).
-  )
-endfunction()
 
-function(esl_apply_msvc_parallel_build TARGET)
-  message(STATUS "Apply esl msvc parallel build for ${TARGET}")
-
-  target_compile_options(${TARGET}
-    PRIVATE
-      /MP
+      $<$<BOOL:ESL_USE_MSVC_PARALLEL_BUILD>:/MP>
   )
 endfunction()

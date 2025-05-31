@@ -36,6 +36,6 @@ jobs:
 
       - name: Build and test
         run: |
-          cmake --preset windows-release -DESL_RUN_CLANG_TIDY_ON_BUILD=${{matrix.run_tidy}}
+          cmake --preset windows-release -DESL_CLANG_TIDY_ON_BUILD=${{matrix.run_tidy}}
           cmake --build --preset windows-release
           ctest --preset windows-release

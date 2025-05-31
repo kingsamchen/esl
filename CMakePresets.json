@@ -15,8 +15,8 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
-                "ESL_USE_SANITIZER": "ASAN;UBSAN",
-                "ESL_RUN_CLANG_TIDY_ON_BUILD": "OFF"
+                "ESL_USE_SANITIZERS": "ASAN;UBSAN",
+                "ESL_CLANG_TIDY_ON_BUILD": "OFF"
             }
         },
         {
@@ -35,8 +35,8 @@
             "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
                 "CPM_SOURCE_CACHE": "$env{CPM_SOURCE_CACHE}",
-                "ESL_USE_SANITIZER": "",
-                "ESL_RUN_CLANG_TIDY_ON_BUILD": "ON",
+                "ESL_USE_SANITIZERS": "",
+                "ESL_CLANG_TIDY_ON_BUILD": "ON",
                 "ESL_USE_MSVC_PARALLEL_BUILD": "ON"
             },
             "condition": {
@@ -51,7 +51,7 @@
             "displayName": "Windows Dev",
             "description": "Dev build on Windows",
             "cacheVariables": {
-                "ESL_RUN_CLANG_TIDY_ON_BUILD": "OFF"
+                "ESL_CLANG_TIDY_ON_BUILD": "OFF"
             }
         }
     ],

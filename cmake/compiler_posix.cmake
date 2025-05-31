@@ -10,7 +10,7 @@ if(ESL_NOT_SUBPROJECT)
   endif()
 endif()
 
-function(esl_apply_common_compile_options TARGET)
+function(esl_common_compile_configs TARGET)
   target_compile_definitions(${TARGET}
     PUBLIC
       $<$<CONFIG:DEBUG>:
@@ -29,6 +29,7 @@ function(esl_apply_common_compile_options TARGET)
       -Woverloaded-virtual
       -Wpointer-arith
       -Wshadow
+      -Wsign-compare
       -Wsign-conversion
       -Wno-unused-function
       -Wno-error=deprecated
