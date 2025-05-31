@@ -25,25 +25,15 @@ target_sources(esl_test
 
 target_link_libraries(esl_test
   PRIVATE
-    esl
+    esl::esl
     doctest
 )
 
-esl_apply_common_compile_options(esl_test)
+esl_common_compile_configs(esl_test)
 
-if(ESL_RUN_CLANG_TIDY_ON_BUILD)
-  esl_apply_clang_tidy_on_build(esl_test)
-endif()
+esl_use_sanitizers(esl_test)
 
-if(ESL_USE_SANITIZER)
-  esl_apply_sanitizer(esl_test)
-endif()
-
-if(MSVC)
-  if(ESL_USE_MSVC_PARALLEL_BUILD)
-    esl_apply_msvc_parallel_build(esl_test)
-  endif()
-endif()
+esl_clang_tidy_on_build(esl_test)
 
 get_target_property(test_FILES esl_test SOURCES)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${test_FILES})

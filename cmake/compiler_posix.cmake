@@ -1,3 +1,4 @@
+include(${ESL_CMAKE_DIR}/utils.cmake)
 
 if(ESL_NOT_SUBPROJECT)
   message(STATUS "esl compiler POSIX global conf is in active")
@@ -10,27 +11,32 @@ if(ESL_NOT_SUBPROJECT)
   endif()
 endif()
 
-function(esl_apply_common_compile_options TARGET)
-  target_compile_definitions(${TARGET}
-    PUBLIC
-      $<$<CONFIG:DEBUG>:
-        _DEBUG
-      >
-  )
+function(esl_common_compile_configs TARGET)
+  get_target_type(${TARGET} TARGET_TYPE)
 
-  target_compile_options(${TARGET}
-    PRIVATE
-      -Wall
-      -Wextra
-      -Werror
-      -Wconversion
-      -Wdouble-promotion
-      -Wold-style-cast
-      -Woverloaded-virtual
-      -Wpointer-arith
-      -Wshadow
-      -Wsign-conversion
-      -Wno-unused-function
-      -Wno-error=deprecated
-  )
+  if(NOT TARGET_TYPE STREQUAL "INTERFACE_LIBRARY")
+    target_compile_definitions(${TARGET}
+      PRIVATE
+        $<$<CONFIG:DEBUG>:
+          _DEBUG
+        >
+    )
+
+    target_compile_options(${TARGET}
+      PRIVATE
+        -Wall
+        -Wextra
+        -Werror
+        -Wconversion
+        -Wdouble-promotion
+        -Wold-style-cast
+        -Woverloaded-virtual
+        -Wpointer-arith
+        -Wshadow
+        -Wsign-compare
+        -Wsign-conversion
+        -Wno-unused-function
+        -Wno-error=deprecated
+    )
+  endif()
 endfunction()
