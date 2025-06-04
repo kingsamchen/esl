@@ -81,6 +81,8 @@ struct win_handle_traits {
 using win_handle_deleter = handle_ptr_deleter<win_handle_traits>;
 using unique_win_handle = std::unique_ptr<win_handle_deleter::pointer, win_handle_deleter>;
 
+static_assert(sizeof(unique_win_handle) == sizeof(HANDLE));
+
 inline unique_win_handle wrap_unique_win_handle(HANDLE raw_handle) {
     return unique_win_handle(unique_win_handle::pointer{raw_handle});
 }
@@ -107,6 +109,8 @@ struct winfile_handle_traits {
 using winfile_handle_deleter = handle_ptr_deleter<winfile_handle_traits>;
 using unique_winfile_handle =
         std::unique_ptr<winfile_handle_deleter::pointer, winfile_handle_deleter>;
+
+static_assert(sizeof(unique_winfile_handle) == sizeof(HANDLE));
 
 inline unique_winfile_handle wrap_unique_winfile_handle(HANDLE raw_file_handle) {
     return unique_winfile_handle(unique_winfile_handle::pointer{raw_file_handle});
@@ -135,6 +139,8 @@ struct fd_traits {
 using fd_deleter = handle_ptr_deleter<fd_traits>;
 using unique_fd = std::unique_ptr<fd_deleter::pointer, fd_deleter>;
 
+static_assert(sizeof(unique_fd) == sizeof(int));
+
 inline unique_fd wrap_unique_fd(int raw_fd) {
     return unique_fd(unique_fd::pointer{raw_fd});
 }
@@ -152,6 +158,8 @@ struct file_deleter {
 };
 
 using unique_file = std::unique_ptr<std::FILE, file_deleter>;
+
+static_assert(sizeof(unique_file) == sizeof(std::FILE*));
 
 inline unique_file wrap_unique_file(std::FILE* fp) {
     return unique_file(fp);
