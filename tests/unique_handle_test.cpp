@@ -72,7 +72,7 @@ TEST_CASE("handle_ptr must meet nullability expression requirements") {
     }
 
     SUBCASE("value initialized handle_ptr must produce a null value of that type") {
-        fake_handle_ptr ptr{};
+        const fake_handle_ptr ptr{};
         // Relies on implicit conversion.
         CHECK(ptr == fake_handle_traits::null_handle);
     }
@@ -80,23 +80,23 @@ TEST_CASE("handle_ptr must meet nullability expression requirements") {
     SUBCASE("must be contextually convertible to bool") {
         {
             const fake_handle_ptr ptr1{};
-            bool valid = static_cast<bool>(ptr1);
+            const bool valid = static_cast<bool>(ptr1);
             CHECK_FALSE(valid);
         }
 
         {
             const fake_handle_ptr ptr2{1};
-            bool valid = static_cast<bool>(ptr2);
+            const bool valid = static_cast<bool>(ptr2);
             CHECK(valid);
         }
     }
 
     SUBCASE("must satisfy following additional expressions") {
         SUBCASE("construction from nullptr") {
-            fake_handle_ptr ptr1(nullptr);
+            const fake_handle_ptr ptr1(nullptr);
             CHECK(ptr1 == nullptr);
 
-            fake_handle_ptr ptr2 = nullptr;
+            const fake_handle_ptr ptr2 = nullptr;
             CHECK(ptr2 == nullptr);
         }
 
@@ -176,7 +176,7 @@ TEST_CASE("common use cases with unique handle") {
     const unique_fake_handle handle{unique_fake_handle::pointer{1}};
 
     // Implicit convert internal pointer to underlying handle type.
-    bool ok = handle.get() == 1;
+    const bool ok = handle.get() == 1;
     CHECK(ok);
 }
 
@@ -187,7 +187,7 @@ TEST_CASE("unique_win_handle should work as expected") {
     using esl::wrap_unique_win_handle;
 
     SUBCASE("default initialized should be equivalent to nullptr") {
-        unique_win_handle handle;
+        const unique_win_handle handle;
         CHECK(handle == nullptr);
     }
 
@@ -201,7 +201,7 @@ TEST_CASE("unique_win_handle should work as expected") {
 
         auto handle = wrap_unique_win_handle(::CreateEventW(nullptr, TRUE, TRUE, event_name));
         REQUIRE(handle != nullptr);
-        REQUIRE(handle.get() != nullptr);
+        REQUIRE(static_cast<HANDLE>(handle.get()) != nullptr);
         auto sync_handle = wrap_unique_win_handle(::OpenEventW(SYNCHRONIZE, FALSE, event_name));
         REQUIRE(sync_handle != nullptr);
         sync_handle.reset();
@@ -218,7 +218,7 @@ TEST_CASE("unique_winfile_handle should satisfy") {
     using esl::wrap_unique_winfile_handle;
 
     SUBCASE("default initialized should be") {
-        unique_winfile_handle handle;
+        const unique_winfile_handle handle;
 
         SUBCASE("equivalent to nullptr") {
             CHECK(handle == nullptr);
@@ -227,7 +227,7 @@ TEST_CASE("unique_winfile_handle should satisfy") {
         SUBCASE("handle value is equal to INVALID_HANDLE_VALUE but not NULL") {
             // Please differentiate NULL value from nullptr.
             CHECK(handle.get() == INVALID_HANDLE_VALUE);
-            CHECK(static_cast<HANDLE>(handle.get()) != NULL);
+            CHECK(static_cast<HANDLE>(handle.get()) != nullptr);
         }
     }
 
@@ -244,7 +244,7 @@ TEST_CASE("unique_fd should satisfy") {
     using esl::wrap_unique_fd;
 
     SUBCASE("default initialized should be") {
-        unique_fd fd_handle;
+        const unique_fd fd_handle;
 
         SUBCASE("equivalent to nullptr") {
             CHECK(fd_handle == nullptr);
