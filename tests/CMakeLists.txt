@@ -18,6 +18,7 @@ target_sources(esl_test
     strings_split_test.cpp
     strings_trim_test.cpp
     unique_handle_test.cpp
+    utility_test.cpp
 )
 
 target_link_libraries(esl_test
