@@ -12,6 +12,7 @@ target_sources(esl
     scope_guard.h
     strings.h
     unique_handle.h
+    utility.h
 
     detail/files.h
     detail/secure_crt.h
