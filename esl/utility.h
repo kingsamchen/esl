@@ -13,4 +13,12 @@ constexpr std::underlying_type_t<E> to_underlying(E e) {
     return static_cast<std::underlying_type_t<E>>(e);
 }
 
+template<typename... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+
+template<typename... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
 } // namespace esl
