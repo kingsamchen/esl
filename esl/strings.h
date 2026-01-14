@@ -260,7 +260,7 @@ auto split(std::string_view text, Delimiter delim, Predicate predicate) {
 
 template<typename Delimiter,
          typename StringType,
-         std::enable_if_t<std::is_same_v<std::remove_cv_t<StringType>, std::string>, int> = 0>
+         std::enable_if_t<std::is_same_v<StringType, std::string>, int> = 0>
 auto split(StringType&& text, // NOLINT(cppcoreguidelines-missing-std-forward)
            Delimiter delim) {
     using delimiter_t = typename detail::select_delimiter<Delimiter>::type;
@@ -271,7 +271,7 @@ auto split(StringType&& text, // NOLINT(cppcoreguidelines-missing-std-forward)
 template<typename Delimiter,
          typename StringType,
          typename Predicate,
-         std::enable_if_t<std::is_same_v<std::remove_cv_t<StringType>, std::string>, int> = 0>
+         std::enable_if_t<std::is_same_v<StringType, std::string>, int> = 0>
 auto split(StringType&& text, // NOLINT(cppcoreguidelines-missing-std-forward)
            Delimiter delim,
            Predicate predicate) {
